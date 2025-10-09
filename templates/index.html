@@ -1,13 +1,29 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="{{ lang }}">
 <head>
     <meta charset="UTF-8">
-    <title>蓍草法周易占卜</title>
-    <link rel="stylesheet" href="static/style.css">
+    <title>{% if lang == 'en' %}Yarrow Stalk I Ching Divination{% else %}蓍草法周易占卜{% endif %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="container">
-        <h2 class="app-title">蓍草法周易占卜</h2>
+        <!-- 語言切換器 -->
+        <div class="language-switcher">
+            {% for code, name in languages.items() %}
+                <a href="{{ url_for('index', lang=code) }}" 
+                   class="lang-btn {{ 'active' if code == lang }}">
+                   {{ name }}
+                </a>
+            {% endfor %}
+        </div>
+
+        <h2 class="app-title">
+            {% if lang == 'en' %}
+                Yarrow Stalk I Ching Divination
+            {% else %}
+                蓍草法周易占卜
+            {% endif %}
+        </h2>
 
         <!--黑框動畫-->
         <div class="canvas-box">
@@ -16,19 +32,44 @@
 
         <!-- 輸入問題與按鈕 -->
         <div style="display:flex; flex-direction:column; align-items:center; margin-top:16px; margin-bottom:18px;">
-            <input type="text" id="aiQuestion" class="input-style" placeholder="請輸入您的問題..."style="margin-bottom:16px; width:300px;" />
+            <input type="text" id="aiQuestion" class="input-style" 
+                   placeholder="{% if lang == 'en' %}Please enter your question...{% else %}請輸入您的問題...{% endif %}"
+                   style="margin-bottom:16px; width:300px;" />
+            
             <label style="display:flex; align-items:center; margin-bottom:16px; font-size:16px; color:#b8a76e;">
-            <input type="checkbox" id="skipAnimation" style="margin-right:8px; accent-color:#ffe873;">
-            跳過動畫
+                <input type="checkbox" id="skipAnimation" style="margin-right:8px; accent-color:#ffe873;">
+                {% if lang == 'en' %}
+                    Skip Animation
+                {% else %}
+                    跳過動畫
+                {% endif %}
             </label>
-            <button id="startBtn" class="main-btn" style="margin: 0 auto; display:block;" onclick="startDivinateEntry()">開始起卦</button>
+            
+            <button id="startBtn" class="main-btn" style="margin: 0 auto; display:block;" onclick="startDivinateEntry()">
+                {% if lang == 'en' %}
+                    Start Divination
+                {% else %}
+                    開始起卦
+                {% endif %}
+            </button>
         </div>
 
         <div style="display:flex; justify-content:center; gap:22px; margin:16px 0;">
-          <button id="resetBtn" class="main-btn" onclick="resetPage()">重啟</button>
-          <button id="aiBtn" class="main-btn" onclick="runAIAnalysis()">AI 分析</button>
+            <button id="resetBtn" class="main-btn" onclick="resetPage()">
+                {% if lang == 'en' %}
+                    Reset
+                {% else %}
+                    重啟
+                {% endif %}
+            </button>
+            <button id="aiBtn" class="main-btn" onclick="runAIAnalysis()">
+                {% if lang == 'en' %}
+                    AI Analysis
+                {% else %}
+                    AI 分析
+                {% endif %}
+            </button>
         </div>
-
 
         <div id="resultArea" class="ip-info"></div>
 
@@ -43,8 +84,11 @@
             </div>
         </div>
     </div>
-    <script src="static/main.js"></script>
+    
+    <script>
+        // 傳遞當前語言到 JavaScript
+        window.currentLang = '{{ lang }}';
+    </script>
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
 </body>
 </html>
-
-
