@@ -1,3 +1,68 @@
+// ---- 多語系支援 ----
+const i18n = {
+    'zh-TW': {
+        'divination_complete': '占卜完成',
+        'analyzing': '分析中...',
+        'analysis_complete': 'AI 分析結果',
+        'location_info': '位置資訊',
+        'hexagram_result': '卦象結果',
+        'line_details': '爻辭詳情',
+        'please_divinate_first': '請先進行占卜產生卦象！',
+        'ai_analyzing': 'AI 分析中，請稍後...',
+        'get_hexagram_failed': '取得卦象失敗',
+        'get_line_text_failed': '取得爻辭失敗',
+        'no_data': '無資料',
+        'ai_analysis_failed': 'AI 分析失敗',
+        'no_analysis_result': '沒有分析結果',
+        'no_analysis_content': '沒有解析內容',
+        'ip_label': 'IP',
+        'region_label': '地區',
+        'timezone_label': '時區',
+        'divination_time': '起卦時間',
+        'hexagram_name': '卦名',
+        'hexagram_text': '卦辭',
+        'lines_label': '各爻',
+        'line_number': '第{n}爻'
+    },
+    'en': {
+        'divination_complete': 'Divination Complete',
+        'analyzing': 'Analyzing...',
+        'analysis_complete': 'AI Analysis Result',
+        'location_info': 'Location Information',
+        'hexagram_result': 'Hexagram Result',
+        'line_details': 'Line Details',
+        'please_divinate_first': 'Please perform divination first to generate hexagram!',
+        'ai_analyzing': 'AI analyzing, please wait...',
+        'get_hexagram_failed': 'Failed to get hexagram',
+        'get_line_text_failed': 'Failed to get line text',
+        'no_data': 'No data',
+        'ai_analysis_failed': 'AI analysis failed',
+        'no_analysis_result': 'No analysis result',
+        'no_analysis_content': 'No analysis content',
+        'ip_label': 'IP',
+        'region_label': 'Region',
+        'timezone_label': 'Timezone',
+        'divination_time': 'Divination Time',
+        'hexagram_name': 'Hexagram',
+        'hexagram_text': 'Judgment',
+        'lines_label': 'Lines',
+        'line_number': 'Line {n}'
+    }
+};
+
+// 翻譯函數
+function _(key, params = {}) {
+    const lang = window.currentLang || 'zh-TW';
+    let text = i18n[lang]?.[key] || i18n['zh-TW']?.[key] || key;
+    
+    // 支援參數替換 （例如 {n}）
+    Object.keys(params).forEach(param => {
+        text = text.replace(new RegExp(`\\{${param}\\}`, 'g'), params[param]);
+    });
+    
+    return text;
+}
+
 // ---- 基本動畫與卦象 ----
 let yaoList = [];
 
@@ -43,8 +108,14 @@ function pixelDivinationAnim(picked, leftCnt, rightCnt, cb) {
             drawSticksGroup(ctx, 355, 80, rightCnt, "#ffe873", 10, 13, 13);
             ctx.font="16px VT323,monospace";
             ctx.fillStyle="#cbad63";
-            ctx.fillText('左堆 ('+leftCnt+'根)',80,168);
-            ctx.fillText('右堆 ('+rightCnt+'根)',395,168);
+            
+            // 多語系文本
+            const lang = window.currentLang || 'zh-TW';
+            const leftText = lang === 'en' ? `Left (${leftCnt})` : `左堆 (${leftCnt}根)`;
+            const rightText = lang === 'en' ? `Right (${rightCnt})` : `右堆 (${rightCnt}根)`;
+            
+            ctx.fillText(leftText, 80, 168);
+            ctx.fillText(rightText, lang === 'en' ? 380 : 395, 168);
             setTimeout(()=>{
                 clearCanvas();
                 drawSticksGroup(ctx,65,80,leftCnt,"#eec268",12,18,10);
@@ -109,13 +180,13 @@ function fetchYaoExplanation(guaName) {
         });
       } else {
         window.yaoList = []; // 沒資料
-        html = '無資料';
+        html = _('no_data');
       }
       yaoDiv.innerHTML = html;
     })
     .catch(() => {
       window.yaoList = [];
-      yaoDiv.innerHTML = '取得爻辭失敗';
+      yaoDiv.innerHTML = _('get_line_text_failed');
     });
 }
 
@@ -124,9 +195,12 @@ function fetchYaoExplanation(guaName) {
 function displayResult(data) {
     let geo = data.geo || {};
     let resultArea = document.getElementById("resultArea");
+    
+    // 多語系顯示
+    const lang = window.currentLang || 'zh-TW';
     resultArea.innerHTML =
-      `IP：<b>${geo.ip||''}</b>　地區：<b>${geo.country||''} ${geo.region||''} ${geo.city||''}</b>　時區：<b>${geo.timezone||''}</b><br>` +
-      `起卦時間：<b>${data.time||''}</b>`;
+      `${_('ip_label')}：<b>${geo.ip||''}</b>　${_('region_label')}：<b>${geo.country||''} ${geo.region||''} ${geo.city||''}</b>　${_('timezone_label')}：<b>${geo.timezone||''}</b><br>` +
+      `${_('divination_time')}：<b>${data.time||''}</b>`;
     resultArea.style.display = 'block';
 
     // 六爻chip展示
@@ -143,7 +217,7 @@ function displayResult(data) {
     drawHexagramCard(linesNumeric, data.gua_name || "卦象");
     // 卦名卦辭
     document.getElementById("guaTitleBar").textContent =
-        `卦名：${data.gua_name || ""}　卦辭：${data.gua_text||""}`;
+        `${_('hexagram_name')}：${data.gua_name || ""}　${_('hexagram_text')}：${data.gua_text||""}`;
     // 查爻辭
     fetchYaoExplanation(data.gua_name || "乾");
     // 顯示結果區
@@ -161,20 +235,24 @@ function displayResult(data) {
 async function runAIAnalysis() {
     const aiBtn = document.getElementById("aiBtn");
     if (!aiBtn._guaData) {
-        alert("請先進行占卜產生卦象！");
+        alert(_('please_divinate_first'));
         return;
     }
     const data = aiBtn._guaData;
     const aiArea = document.getElementById("aiResultArea");
     aiArea.style.display = "block";
-    aiArea.textContent = "AI 分析中，請稍後...";
+    aiArea.textContent = _('ai_analyzing');
     const questionInput = document.getElementById("aiQuestion");
     const question = questionInput ? questionInput.value : "";
+    
+    // 添加語言參數到 payload
+    const lang = window.currentLang || 'zh-TW';
     const payload = {
         question: question,
         gua_name: data.gua_name || "",
         gua_text: data.gua_text || "",
-        yao_list: Array.isArray(window.yaoList) ? window.yaoList : []
+        yao_list: Array.isArray(window.yaoList) ? window.yaoList : [],
+        lang: lang  // 添加語言參數
     };
     try {
         const res = await fetch('/api/ai-analysis', {
@@ -183,29 +261,36 @@ async function runAIAnalysis() {
             body: JSON.stringify(payload)
         });
         const result = await res.json();
-        aiArea.innerHTML = formatAiResult(result?.result || result?.prompt || result || "AI 分析失敗（無內容）");
+        aiArea.innerHTML = formatAiResult(result?.result || result?.prompt || result || _('ai_analysis_failed'));
     } catch (e) {
-        aiArea.textContent = "AI 分析失敗：" + (e.message || e);
+        aiArea.textContent = _('ai_analysis_failed') + "：" + (e.message || e);
     }
 }
 
 // AI格式化
 function formatAiResult(result) {
-    if (!result) return '<span style="color:red;">沒有分析結果</span>';
+    if (!result) return `<span style="color:red;">${_('no_analysis_result')}</span>`;
     if (typeof result === "string") {
         try { const obj = JSON.parse(result); return formatAiResult(obj); }
         catch { return `<div class="ai-section">${result.replace(/\n/g, "<br>")}</div>`; }
     }
     let html = "";
-    const keysMap = {
+    
+    // 多語系標籤映射
+    const lang = window.currentLang || 'zh-TW';
+    const keysMap = lang === 'en' ? {
+        "卦象": "Hexagram","name": "Hexagram","description": "Description","卦象解析": "Analysis",
+        "judgment": "Judgment","卦辭": "Judgment","卦辭解析": "Judgment Analysis","advice": "Advice"
+    } : {
         "卦象": "卦象","name": "卦象","description": "卦象解析","卦象解析": "卦象解析",
         "judgment": "卦辭","卦辭": "卦辭","卦辭解析": "卦辭解析","advice": "建議"
     };
+    
     for (const [k, v] of Object.entries(result)) {
         if (k === "lines" && Array.isArray(v)) {
-            html += `<div class="ai-section"><span class="ai-label">各爻：</span>`;
+            html += `<div class="ai-section"><span class="ai-label">${_('lines_label')}：</span>`;
             v.forEach((line, idx) => {
-                html += `<div class="ai-yao"><span class="ai-yao-label">第${idx+1}爻：</span><span class="ai-yao-text">${line.text || line.position || ""}</span>`;
+                html += `<div class="ai-yao"><span class="ai-yao-label">${_('line_number', {n: idx+1})}：</span><span class="ai-yao-text">${line.text || line.position || ""}</span>`;
                 if (line.interpretation) html += `<div class="ai-yao-explain">${line.interpretation}</div>`;
                 html += `</div>`;
             });
@@ -218,7 +303,7 @@ function formatAiResult(result) {
         const label = keysMap[k] || k;
         html += `<div class="ai-section"><span class="ai-label">${label}：</span>${String(v).replace(/\n/g, "<br>")}</div>`;
     }
-    return html || "<span style='color:red;'>沒有解析內容</span>";
+    return html || `<span style='color:red;'>${_('no_analysis_content')}</span>`;
 }
 
 // ---- 頁面初始化/重啟 ----
@@ -252,7 +337,9 @@ function startDivinate() {
     }
     doStage(0, 3, function () {
         setTimeout(function () {
-            fetch('/api/divinate')
+            // 添加語言參數到 API 呼叫
+            const lang = window.currentLang || 'zh-TW';
+            fetch(`/api/divinate?lang=${lang}`)
                 .then(r => r.json())
                 .then(data => {
                     displayResult(data);
@@ -261,7 +348,7 @@ function startDivinate() {
                 })
                 .catch(() => {
                     document.getElementById("resultArea").style.display = 'block';
-                    document.getElementById("resultArea").textContent = '取得卦象失敗';
+                    document.getElementById("resultArea").textContent = _('get_hexagram_failed');
                     document.getElementById('startBtn').disabled = false;
                 });
         }, 900);
@@ -272,7 +359,8 @@ function startDivinateEntry() {
     var skipAnim = document.getElementById("skipAnimation")?.checked;
     if (skipAnim) {
         // 跳過動畫直接顯示卦象結果
-        fetch('/api/divinate')
+        const lang = window.currentLang || 'zh-TW';
+        fetch(`/api/divinate?lang=${lang}`)
             .then(r => r.json())
             .then(data => {
                 displayResult(data);
@@ -281,7 +369,7 @@ function startDivinateEntry() {
             })
             .catch(() => {
                 document.getElementById("resultArea").style.display = 'block';
-                document.getElementById("resultArea").textContent = '取得卦象失敗';
+                document.getElementById("resultArea").textContent = _('get_hexagram_failed');
                 document.getElementById('startBtn').disabled = false;
             });
         document.getElementById('startBtn').disabled = true; // 防止重複點擊
