@@ -1,0 +1,15 @@
+version: "3"
+services:
+  redis:
+    image: redis:6
+    container_name: yi-redis
+    ports:
+      - "6379:6379"
+  flask:
+    build: .
+    depends_on:
+      - redis
+    container_name: yi-flask
+    ports:
+      - "1688:1688"
+

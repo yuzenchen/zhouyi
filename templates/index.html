@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>蓍草法周易占卜</title>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h2 class="app-title">蓍草法周易占卜</h2>
+
+        <!--黑框動畫-->
+        <div class="canvas-box">
+            <canvas id="sticksCanvas" width="600" height="200"></canvas>
+        </div>
+
+        <!-- 輸入問題與按鈕 -->
+        <div style="display:flex; flex-direction:column; align-items:center; margin-top:16px; margin-bottom:18px;">
+            <input type="text" id="aiQuestion" class="input-style" placeholder="請輸入您的問題..."style="margin-bottom:16px; width:300px;" />
+            <label style="display:flex; align-items:center; margin-bottom:16px; font-size:16px; color:#b8a76e;">
+            <input type="checkbox" id="skipAnimation" style="margin-right:8px; accent-color:#ffe873;">
+            跳過動畫
+            </label>
+            <button id="startBtn" class="main-btn" style="margin: 0 auto; display:block;" onclick="startDivinateEntry()">開始起卦</button>
+        </div>
+
+        <div style="display:flex; justify-content:center; gap:22px; margin:16px 0;">
+          <button id="resetBtn" class="main-btn" onclick="resetPage()">重啟</button>
+          <button id="aiBtn" class="main-btn" onclick="runAIAnalysis()">AI 分析</button>
+        </div>
+
+
+        <div id="resultArea" class="ip-info"></div>
+
+        <div id="hexagramPanel" class="gua-flex" style="display:none;">
+            <div id="guaSymbolCard"></div>
+            <div class="hex-col">
+                <div class="six-lines" id="sixLines"></div>
+                <div id="guaTitleBar" class="gua-title-bar"></div>
+                <div id="guaText" class="gua-text"></div>
+                <div id="yaoExplain" class="yao-explain"></div>
+                <div id="aiResultArea" class="ai-result-area" style="display:none;margin-top:18px;"></div>
+            </div>
+        </div>
+    </div>
+    <script src="static/main.js"></script>
+</body>
+</html>
+
+

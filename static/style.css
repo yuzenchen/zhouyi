@@ -1,0 +1,181 @@
+body {
+    font-family: 'Noto Serif TC', 'VT323', 'Consolas', 'monospace', Arial, sans-serif;
+    background: #28251f url('https://www.transparenttextures.com/patterns/asfalt-light.png');
+    margin: 0; min-height: 100vh;
+}
+.container {
+    max-width: 730px;
+    margin: 0 auto;
+    padding: 30px 8px 30px 8px;
+}
+.app-title {
+    color: #ffe873;
+    text-shadow: 2px 2px 3px #6d5c11bb, 0 1px #eed;
+    font-size: 2.3em;
+    text-align: center;
+    letter-spacing: 2px;
+    margin-bottom: 1em;
+}
+.desc-text {
+    color: #ffe492;
+    text-align: center;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+    font-size: 1.08em;
+}
+.main-btn {
+    font-family:'VT323', 'Noto Sans TC', monospace;
+    font-size: 23px;
+    padding: 0.54em 2em;
+    background:#2e2c28;
+    color:#ffe873;
+    border:2.5px solid #cbad63;
+    border-radius:13px;
+    box-shadow: 0 2px 14px #2217;
+    cursor:pointer;
+    font-weight:bold;
+    display:block;
+    margin:0;
+    transition: background .13s, transform .13s;
+}
+.main-btn:active { background:#443916; }
+.canvas-box {
+    background: #181711;
+    border: 2.5px solid #ffe873;
+    border-radius: 15px;
+    box-shadow: 0 2px 17px #cdb87544;
+    width: 95%;
+    max-width: 570px;
+    margin: 0 auto 20px auto;
+    padding: 20px 6px 20px 6px;
+    display: flex; align-items: center; justify-content: center;
+}
+#sticksCanvas {
+    display: block;
+    width: 100%;
+    max-width: 520px;
+    height: 180px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    border-radius: 10px;
+}
+.ip-info {
+    background: #121110dc;
+    color: #ffe38e;
+    border-radius: 12px;
+    box-shadow:0 2px 16px #efd38a44;
+    margin: 11px auto 15px auto;
+    padding: 11px 16px;
+    font-size: 15.5px;
+    max-width: 520px;
+    letter-spacing: 1.1px;
+    font-family: 'VT323',monospace;
+    display: none;
+}
+.gua-flex {
+    display: flex; flex-direction: row;
+    gap: 18px; justify-content: center; align-items: flex-start;
+    margin-bottom: 14px;
+}
+#guaSymbolCard {min-width:120px; margin:0;}
+.hex-col {flex: 1 1 360px; min-width:0;}
+.hexagram-card {
+    background: #EEE8D2;
+    border: 3px solid #CDB875;
+    border-radius: 18px;
+    padding: 18px 18px 12px 18px;
+    min-width:110px; max-width:120px;
+    box-shadow: 0 2px 10px #97845255;
+    text-align: center;
+}
+.hexagram-chinese {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 29px;
+    color: #1A1A1A;
+    margin-bottom: 3px;
+    font-weight: bold;
+    text-shadow: 0 1px #d3ba85;
+}
+.hexagram-english {
+    font-size:15px;
+    color:#926d00;
+    margin-bottom: 7px;
+    letter-spacing: 1px;
+}
+.hexagram-lines {
+    margin-top: 6px; margin-bottom: 4px;
+}
+.hexagram-line-yang {
+    background: #222;
+    height: 16px;
+    width: 82px;
+    border-radius: 4px;
+    margin: 0 auto 4.5px auto;
+}
+.hexagram-line-yin {
+    display: flex;
+    justify-content: space-between;
+    height: 16px;
+    width: 82px;
+    margin: 0 auto 4.5px auto;
+}
+.hexagram-line-yin span {
+    background: #222;
+    height: 16px;
+    width: 36px;
+    border-radius: 4px;
+}
+.gua-title-bar {
+    color:#ffe873;
+    font-size: 1.08em;
+    margin-bottom:5px;
+    font-family:'VT323','Consolas','monospace',Arial,sans-serif;
+    padding: 0 9px;
+    font-weight: bold;
+    letter-spacing: 1.2px;
+    word-break: break-all;
+}
+.gua-text { font-size: 16px; color: #ead987; margin-bottom:8px; background:#26241b; padding:7px 10px 6px 10px; border-radius:8px; text-align:right; letter-spacing:1px; min-width:130px;}
+.six-lines { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:5px;}
+.six-line-chip { background:#ffeea6; color:#222; border-radius:5px; padding:2px 7px; font-size:15.5px; border: 1.1px solid #cdb875;}
+.yao-explain { font-size: 15px; background: #FFFDF1; color: #222; padding: 10px 14px 7px 14px; border-radius: 10px; box-shadow: 0 2px 11px #ecd57244; border: 2px solid #ecd572;}
+.ai-result-area { max-width: 670px; margin: 18px auto 0 auto; background: #fffbea; color: #252821; border-radius: 14px; box-shadow: 0 2px 10px #ecd572bb; padding: 15px 17px 8px 17px; font-size: 17px; line-height: 2; word-break: break-word;}
+.ai-label { color: #9c8416; font-weight: bold;}
+.ai-section { margin: 10px 0 0 0; padding-bottom: 3px; border-bottom: 1px dashed #f3e2a5;}
+.ai-gua { font-weight: bold; font-size: 1.09em; background: #fff7d0d2; border-radius: 7px; padding: 6px 12px; margin-bottom: 6px;}
+.ai-yao { margin: 8px 0 0 1.1em; padding-left: 0.6em; border-left: 3px solid #e5ce95; background: #fcf4e0; border-radius: 5px; font-size: 15px;}
+.ai-yao-label { color: #855d09; font-weight: bold;}
+.ai-yao-text { color: #527; font-weight: bold; margin-left: 8px;}
+.ai-yao-explain { margin-left: 1.1em; color: #2a3242; font-size: 14px; line-height: 1.7; margin-top: 2px;}
+@media (max-width:700px){.gua-flex{flex-direction:column;gap:3vw;}}
+@media (max-width:600px){
+    .container {padding:10px 2vw;}
+    .canvas-box {max-width:99vw;}
+    #sticksCanvas {max-width:97vw;}
+    .ip-info, .ai-result-area {font-size:14.4px;}
+}
+.input-style {
+  font-size: 19px;
+  width: 330px;
+  padding: 11px 18px;
+  border-radius: 13px;
+  border: 2.5px solid #cdb875;
+  background: #fffbea;
+  color: #222;
+  box-shadow: 0 2px 13px #ecd57277;
+  outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+.input-style:focus {
+  border-color: #ffe873;
+  box-shadow: 0 2px 21px #ffe87399, 0 2px 14px #ecd57277;
+  background: #fffde4;
+}
+.input-style::placeholder {
+  color: #b8a76e;
+  font-size: 17px;
+  letter-spacing: 1px;
+  opacity: 0.6;
+  text-align: left;
+}
