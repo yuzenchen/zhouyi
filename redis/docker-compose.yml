@@ -9,7 +9,7 @@ services:
     build: .
     depends_on:
       - redis
-    container_name: yi-flask
+    container_name: yi-api
     ports:
       - "1688:1688"
 

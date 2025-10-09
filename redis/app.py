@@ -5,7 +5,7 @@ from opencc import OpenCC
 
 app = Flask(__name__)
 r = redis.Redis(host='redis', port=6379, db=0)
-CORS(app, origins=["https://yi.me-s01.com"])
+CORS(app, origins=["https://yi.me-s01.com","https://zhouyi.me-s01.com"])
 
 cc_to_simp = OpenCC('tw2sp')      # 繁→簡
 cc_to_trad = OpenCC('s2twp')      # 簡→繁
