@@ -1,7 +1,7 @@
 #!/bin/bash
 
-APP_NAME="zhouyi-flask"
-PORT=888
+APP_NAME="zhouyi-v1"
+PORT=8888
 
 echo "開始建置 Docker 映像檔…"
 docker build -t $APP_NAME .
@@ -18,7 +18,7 @@ if docker ps -a --format '{{.Names}}' | grep -Eq "^${APP_NAME}$"; then
     docker rm $APP_NAME
 fi
 
-docker run -d --name $APP_NAME -p $PORT:888 $APP_NAME
+docker run -d --name $APP_NAME -p $PORT:8888 $APP_NAME
 
 if [ $? -eq 0 ]; then
     echo "啟動容器完成"

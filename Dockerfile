@@ -14,7 +14,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # 開放 Flask 運作的 port（預設 5000）
-EXPOSE 888
+EXPOSE 8888
 
 # 啟動服務
 CMD ["python", "app.py"]

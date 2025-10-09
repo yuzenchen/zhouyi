@@ -315,4 +315,4 @@ def ai_analysis():
         return jsonify({'error':'flask internal error','detail':str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=888)
+    app.run(host='0.0.0.0', port=8888)
