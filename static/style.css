@@ -7,7 +7,45 @@ body {
     max-width: 730px;
     margin: 0 auto;
     padding: 30px 8px 30px 8px;
+    position: relative;
 }
+
+/* 語言切換器樣式 */
+.language-switcher {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 100;
+}
+
+.lang-btn {
+    padding: 8px 12px;
+    background: rgba(184, 167, 110, 0.1);
+    border: 1px solid #b8a76e;
+    border-radius: 6px;
+    color: #b8a76e;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    font-family: 'VT323', 'Consolas', monospace;
+    letter-spacing: 0.5px;
+}
+
+.lang-btn:hover {
+    background: rgba(184, 167, 110, 0.2);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(255, 232, 115, 0.3);
+}
+
+.lang-btn.active {
+    background: #b8a76e;
+    color: #1a1a1a;
+    font-weight: bold;
+    box-shadow: 0 2px 10px rgba(255, 232, 115, 0.4);
+}
+
 .app-title {
     color: #ffe873;
     text-shadow: 2px 2px 3px #6d5c11bb, 0 1px #eed;
@@ -148,12 +186,42 @@ body {
 .ai-yao-label { color: #855d09; font-weight: bold;}
 .ai-yao-text { color: #527; font-weight: bold; margin-left: 8px;}
 .ai-yao-explain { margin-left: 1.1em; color: #2a3242; font-size: 14px; line-height: 1.7; margin-top: 2px;}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .language-switcher {
+        position: relative;
+        top: auto;
+        right: auto;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+    
+    .container {
+        padding-top: 20px;
+    }
+    
+    .app-title {
+        font-size: 2em;
+    }
+}
+
 @media (max-width:700px){.gua-flex{flex-direction:column;gap:3vw;}}
 @media (max-width:600px){
     .container {padding:10px 2vw;}
     .canvas-box {max-width:99vw;}
     #sticksCanvas {max-width:97vw;}
     .ip-info, .ai-result-area {font-size:14.4px;}
+    
+    .lang-btn {
+        font-size: 13px;
+        padding: 6px 10px;
+    }
+    
+    .language-switcher {
+        gap: 8px;
+        margin-bottom: 15px;
+    }
 }
 .input-style {
   font-size: 19px;
