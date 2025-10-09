@@ -10,9 +10,14 @@ except ImportError:
 
 app = Flask(__name__)
 
-# 六十四卦查表（同前，不再重複貼出，可直接使用）
+# 支援的語言
+SUPPORTED_LANGUAGES = {
+    'zh-TW': '繁體中文',
+    'en': 'English'
+}
 
-gua_lookup = {
+# 中文版六十四卦查表
+gua_lookup_zh = {
     (0, 0): ("坤", "地勢坤，君子以厚德載物。"),
     (1, 0): ("復", "亨，出入無疾，朋來無咎。"),
     (2, 0): ("臨", "元，亨，利，貞，至於八月有凶。"),
@@ -79,6 +84,94 @@ gua_lookup = {
     (7, 7): ("乾", "天行健，君子以自強不息。"),
 }
 
+# 英文版六十四卦查表
+gua_lookup_en = {
+    (0, 0): ("Kun", "The Earth is receptive, the superior man carries all things with great virtue."),
+    (1, 0): ("Fu", "Return. Success. Going out and coming in without disease, friends come without fault."),
+    (2, 0): ("Lin", "Approach. Fundamentally successful, beneficial and correct. In the eighth month there will be misfortune."),
+    (3, 0): ("Meng", "Youthful Folly. Success. It is not I who seeks the youthful fool, the youthful fool seeks me."),
+    (4, 0): ("Xu", "Waiting. With sincerity you will have brilliant success. Perseverance brings good fortune. It furthers one to cross the great water."),
+    (5, 0): ("Song", "Conflict. You are sincere and are being obstructed. A cautious halt halfway brings good fortune."),
+    (6, 0): ("Shi", "The Army. Perseverance from the adult brings good fortune. No blame."),
+    (7, 0): ("Bi", "Holding Together. Good fortune. Let the oracle be asked whether you possess sublimity, constancy, and perseverance."),
+    (0, 1): ("Da Zhuang", "The Power of the Great. Perseverance furthers."),
+    (1, 1): ("Jin", "Progress. The powerful prince is honored with horses in large numbers. In a single day he is granted audience three times."),
+    (2, 1): ("Ming Yi", "Darkening of the Light. Perseverance in difficulty furthers. It is beneficial to be like the hermit, correct and firm."),
+    (3, 1): ("Guan", "Contemplation. The ablution has been made, but not yet the offering. Full of trust they look up to him."),
+    (4, 1): ("Bo", "Splitting Apart. It does not further one to go anywhere."),
+    (5, 1): ("Fu", "Return. Success. Going out and coming in without disease, friends come without fault."),
+    (6, 1): ("Wu Wang", "Innocence. Supreme success. Perseverance furthers."),
+    (7, 1): ("Da You", "Possession in Great Measure. Supreme success."),
+    (0, 2): ("Gou", "Coming to Meet. The maiden is powerful. One should not marry such a maiden."),
+    (1, 2): ("Jin", "Progress. The powerful prince is honored with horses in large numbers."),
+    (2, 2): ("Ming Yi", "Darkening of the Light. Perseverance in difficulty furthers."),
+    (3, 2): ("Guan", "Contemplation. The ablution has been made, but not yet the offering."),
+    (4, 2): ("Bo", "Splitting Apart. It does not further one to go anywhere."),
+    (5, 2): ("Fu", "Return. Success. Going out and coming in without disease."),
+    (6, 2): ("Wu Wang", "Innocence. Supreme success. Perseverance furthers."),
+    (7, 2): ("Da You", "Possession in Great Measure. Supreme success."),
+    (0, 3): ("Kui", "Opposition. In small matters, good fortune."),
+    (1, 3): ("Jian", "Obstruction. The southwest furthers. The northeast does not further."),
+    (2, 3): ("Xie", "Deliverance. The southwest furthers. If there is no longer anything where one has to go, return brings good fortune."),
+    (3, 3): ("Sun", "Decrease. If you are sincere, you will have supreme good fortune without blame. You can be persevering. It furthers one to undertake something."),
+    (4, 3): ("Yi", "Increase. It furthers one to undertake something. It furthers one to cross the great water."),
+    (5, 3): ("Guai", "Break-through. One must resolutely make the matter known at the court of the king."),
+    (6, 3): ("Gou", "Coming to Meet. The maiden is powerful."),
+    (7, 3): ("Cui", "Gathering Together. Success. The king approaches his temple. It furthers one to see the great man."),
+    (0, 4): ("Sheng", "Pushing Upward. Supreme success. One must see the great man. Fear not. Departure toward the south brings good fortune."),
+    (1, 4): ("Kun", "Oppression. Success. Perseverance. The great man brings about good fortune. No blame."),
+    (2, 4): ("Jing", "The Well. The town may be changed, but the well cannot be changed. It neither decreases nor increases."),
+    (3, 4): ("Ge", "Revolution. On your own day you are believed. Supreme success through perseverance. Remorse disappears."),
+    (4, 4): ("Ding", "The Caldron. Supreme good fortune. Success."),
+    (5, 4): ("Zhen", "The Arousing. Shock brings success. Shock comes—oh, oh! Laughing words—ha, ha!"),
+    (6, 4): ("Gen", "Keeping Still. Keeping his back still so that he no longer feels his body."),
+    (7, 4): ("Jian", "Development. The maiden's marriage brings good fortune. Perseverance furthers."),
+    (0, 5): ("Gui Mei", "The Marrying Maiden. Undertakings bring misfortune. Nothing that would further."),
+    (1, 5): ("Feng", "Abundance. Success. The king attains abundance. Be not sad. Be like the sun at midday."),
+    (2, 5): ("Lu", "The Wanderer. Success through smallness. Perseverance brings good fortune to the wanderer."),
+    (3, 5): ("Xun", "The Gentle. Success through what is small. It furthers one to have somewhere to go."),
+    (4, 5): ("Dui", "The Joyous. Success. Perseverance is favorable."),
+    (5, 5): ("Huan", "Dispersion. Success. The king approaches his temple. It furthers one to cross the great water."),
+    (6, 5): ("Jie", "Limitation. Success. Galling limitation must not be persevered in."),
+    (7, 5): ("Zhong Fu", "Inner Truth. Pigs and fishes. Good fortune. It furthers one to cross the great water."),
+    (0, 6): ("Xiao Guo", "Preponderance of the Small. Success. Perseverance furthers. Small things may be done; great things should not be done."),
+    (1, 6): ("Ji Ji", "After Completion. Success in small matters. Perseverance furthers."),
+    (2, 6): ("Wei Ji", "Before Completion. Success. It furthers one to cross the great water."),
+    (3, 6): ("Jia Ren", "The Family. The perseverance of the woman furthers."),
+    (4, 6): ("Kui", "Opposition. In small matters, good fortune."),
+    (5, 6): ("Jian", "Obstruction. The southwest furthers. The northeast does not further."),
+    (6, 6): ("Xie", "Deliverance. The southwest furthers."),
+    (7, 6): ("Sun", "Decrease. If you are sincere, you will have supreme good fortune."),
+    (0, 7): ("Yi", "Increase. It furthers one to undertake something. It furthers one to cross the great water."),
+    (1, 7): ("Guai", "Break-through. One must resolutely make the matter known at the court of the king."),
+    (2, 7): ("Gou", "Coming to Meet. The maiden is powerful. One should not marry such a maiden."),
+    (3, 7): ("Cui", "Gathering Together. Success. The king approaches his temple."),
+    (4, 7): ("Sheng", "Pushing Upward. Supreme success. One must see the great man."),
+    (5, 7): ("Kun", "Oppression. Success. Perseverance. The great man brings about good fortune."),
+    (6, 7): ("Jing", "The Well. The town may be changed, but the well cannot be changed."),
+    (7, 7): ("Qian", "Heaven moves vigorously, the superior man strengthens himself unceasingly."),
+}
+
+# 多語系文字字典
+translations = {
+    'zh-TW': {
+        'old_yin': '老陰',
+        'young_yang': '少陽', 
+        'young_yin': '少陰',
+        'old_yang': '老陽',
+        'unknown_hexagram': '未知卦象',
+        'unknown_text': '未收錄卦辭'
+    },
+    'en': {
+        'old_yin': 'Old Yin',
+        'young_yang': 'Young Yang',
+        'young_yin': 'Young Yin', 
+        'old_yang': 'Old Yang',
+        'unknown_hexagram': 'Unknown Hexagram',
+        'unknown_text': 'Text not recorded'
+    }
+}
+
 def yarrow_stalk_one_line(seed=None):
     if seed is not None:
         random.seed(seed)
@@ -112,11 +205,21 @@ def interpret_lines(lines):
             bin_lines.append(1)
     return bin_lines
 
-def get_gua_name_and_text(bin_lines):
+def get_gua_name_and_text(bin_lines, lang='zh-TW'):
     inner = bin_lines[0] + bin_lines[1]*2 + bin_lines[2]*4
     outer = bin_lines[3] + bin_lines[4]*2 + bin_lines[5]*4
     key = (inner, outer)
-    return gua_lookup.get(key, ("未知卦象", "未收錄卦辭"))
+    
+    # 根據語言選擇對應的卦象查表
+    if lang == 'en':
+        lookup_table = gua_lookup_en
+    else:
+        lookup_table = gua_lookup_zh
+    
+    # 獲取翻譯文字
+    trans = translations.get(lang, translations['zh-TW'])
+    
+    return lookup_table.get(key, (trans['unknown_hexagram'], trans['unknown_text']))
 
 def get_client_geolocation(ip):
     try:
@@ -137,14 +240,24 @@ def get_client_geolocation(ip):
     return {"ip": ip, "country": "", "region": "", "city": "", "timezone": ""}
 
 @app.route('/')
-def index():
-    return render_template('index.html')
+@app.route('/<lang>')
+def index(lang='zh-TW'):
+    # 驗證語言參數
+    if lang not in SUPPORTED_LANGUAGES:
+        lang = 'zh-TW'
+    return render_template('index.html', lang=lang, languages=SUPPORTED_LANGUAGES)
+
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory('static', 'favicon.ico')
 
 @app.route('/api/divinate')
 def api_divinate():
+    # 獲取語言參數
+    lang = request.args.get('lang', 'zh-TW')
+    if lang not in SUPPORTED_LANGUAGES:
+        lang = 'zh-TW'
+    
     if request.headers.getlist("X-Forwarded-For"):
         user_ip = request.headers.getlist("X-Forwarded-For")[0].split(',')[0]
     else:
@@ -161,8 +274,16 @@ def api_divinate():
     seed = int(now_utc.strftime("%Y%m%d%H%M%S"))
     lines = get_hexagram(seed=seed)
     bin_lines = interpret_lines(lines[::-1])
-    name, text = get_gua_name_and_text(bin_lines)
-    trans = {6: "老陰", 7: "少陽", 8: "少陰", 9: "老陽"}
+    name, text = get_gua_name_and_text(bin_lines, lang)
+    
+    # 根據語言獲取爻的翻譯
+    trans_text = translations.get(lang, translations['zh-TW'])
+    trans = {
+        6: trans_text['old_yin'],
+        7: trans_text['young_yang'],
+        8: trans_text['young_yin'],
+        9: trans_text['old_yang']
+    }
     lines_text = [f"{trans[line]}({line})" for line in reversed(lines)]
 
     return jsonify({
@@ -170,7 +291,8 @@ def api_divinate():
         "geo": geo,
         "lines": lines_text,
         "gua_name": name,
-        "gua_text": text
+        "gua_text": text,
+        "lang": lang
     })
 
 @app.route('/api/ai-analysis', methods=['POST'])
@@ -194,4 +316,3 @@ def ai_analysis():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=888)
-
