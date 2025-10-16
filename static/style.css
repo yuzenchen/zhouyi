@@ -196,11 +196,11 @@ body {
         justify-content: center;
         margin-bottom: 20px;
     }
-    
+
     .container {
         padding-top: 20px;
     }
-    
+
     .app-title {
         font-size: 2em;
     }
@@ -212,12 +212,12 @@ body {
     .canvas-box {max-width:99vw;}
     #sticksCanvas {max-width:97vw;}
     .ip-info, .ai-result-area {font-size:14.4px;}
-    
+
     .lang-btn {
         font-size: 13px;
         padding: 6px 10px;
     }
-    
+
     .language-switcher {
         gap: 8px;
         margin-bottom: 15px;
@@ -246,4 +246,177 @@ body {
   letter-spacing: 1px;
   opacity: 0.6;
   text-align: left;
+}
+
+/* 3D 卦象卡片容器 */
+.hexagram-card-container {
+    perspective: 1000px;
+    padding: 20px;
+    margin: 20px auto;
+    width: fit-content;
+}
+
+/* 3D 卦象卡片主體 */
+.hexagram-card-3d {
+    position: relative;
+    width: 200px;
+    height: 280px;
+    transform-style: preserve-3d;
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.320, 1);
+    cursor: pointer;
+    background: linear-gradient(135deg,
+        rgba(255, 232, 115, 0.1) 0%,
+        rgba(255, 232, 115, 0.05) 100%);
+    border: 2px solid rgba(255, 232, 115, 0.3);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        0 2px 8px rgba(255, 232, 115, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* 懸浮效果 */
+.hexagram-card-3d:hover {
+    transform: translateY(-10px) rotateX(5deg) rotateY(5deg);
+    box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.4),
+        0 4px 16px rgba(255, 232, 115, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 232, 115, 0.5);
+}
+
+/* 卡片內容佈局 */
+.hexagram-card-content {
+    padding: 20px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+}
+
+/* 卦名樣式 */
+.hexagram-name-3d {
+    font-size: 24px;
+    font-weight: bold;
+    color: #ffe873;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+/* 英文卦名 */
+.hexagram-english-3d {
+    font-size: 14px;
+    color: #cbad63;
+    font-style: italic;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* 卦象線條容器 */
+.hexagram-lines-3d {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 20px 0;
+}
+
+/* 陽爻 */
+.hexagram-line-yang-3d {
+    width: 80px;
+    height: 8px;
+    background: linear-gradient(90deg, #ffe873 0%, #ffd249 100%);
+    border-radius: 4px;
+    box-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.3),
+        0 0 8px rgba(255, 232, 115, 0.3);
+    position: relative;
+}
+
+/* 陰爻 */
+.hexagram-line-yin-3d {
+    width: 80px;
+    height: 8px;
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+}
+
+.hexagram-line-yin-3d span {
+    width: 35px;
+    height: 8px;
+    background: linear-gradient(90deg, #ffe873 0%, #ffd249 100%);
+    border-radius: 4px;
+    box-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.3),
+        0 0 8px rgba(255, 232, 115, 0.3);
+}
+
+/* 背景裝飾元素 */
+.hexagram-card-3d::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(255, 232, 115, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255, 232, 115, 0.05) 0%, transparent 50%);
+    border-radius: 14px;
+    pointer-events: none;
+}
+
+/* 發光效果 */
+.hexagram-card-3d::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg,
+        rgba(255, 232, 115, 0.1),
+        transparent,
+        rgba(255, 232, 115, 0.1));
+    border-radius: 18px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.hexagram-card-3d:hover::after {
+    opacity: 1;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .hexagram-card-3d {
+        width: 160px;
+        height: 220px;
+    }
+
+    .hexagram-name-3d {
+        font-size: 20px;
+    }
+
+    .hexagram-lines-3d {
+        gap: 6px;
+    }
+
+    .hexagram-line-yang-3d,
+    .hexagram-line-yin-3d {
+        width: 60px;
+        height: 6px;
+    }
+
+    .hexagram-line-yin-3d span {
+        width: 26px;
+        height: 6px;
+    }
 }

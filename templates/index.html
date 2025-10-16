@@ -10,7 +10,7 @@
         <!-- 語言切換器 -->
         <div class="language-switcher">
             {% for code, name in languages.items() %}
-                <a href="{{ url_for('index', lang=code) }}" 
+                <a href="{{ url_for('index', lang=code) }}"
                    class="lang-btn {{ 'active' if code == lang }}">
                    {{ name }}
                 </a>
@@ -32,10 +32,10 @@
 
         <!-- 輸入問題與按鈕 -->
         <div style="display:flex; flex-direction:column; align-items:center; margin-top:16px; margin-bottom:18px;">
-            <input type="text" id="aiQuestion" class="input-style" 
+            <input type="text" id="aiQuestion" class="input-style"
                    placeholder="{% if lang == 'en' %}Please enter your question...{% else %}請輸入您的問題...{% endif %}"
                    style="margin-bottom:16px; width:300px;" />
-            
+
             <label style="display:flex; align-items:center; margin-bottom:16px; font-size:16px; color:#b8a76e;">
                 <input type="checkbox" id="skipAnimation" style="margin-right:8px; accent-color:#ffe873;">
                 {% if lang == 'en' %}
@@ -44,7 +44,7 @@
                     跳過動畫
                 {% endif %}
             </label>
-            
+
             <button id="startBtn" class="main-btn" style="margin: 0 auto; display:block;" onclick="startDivinateEntry()">
                 {% if lang == 'en' %}
                     Start Divination
@@ -74,7 +74,7 @@
         <div id="resultArea" class="ip-info"></div>
 
         <div id="hexagramPanel" class="gua-flex" style="display:none;">
-            <div id="guaSymbolCard"></div>
+            <div id="guaSymbolCard" class="hexagram-card-wrapper"></div>
             <div class="hex-col">
                 <div class="six-lines" id="sixLines"></div>
                 <div id="guaTitleBar" class="gua-title-bar"></div>
@@ -84,7 +84,7 @@
             </div>
         </div>
     </div>
-    
+
     <script>
         // 傳遞當前語言到 JavaScript
         window.currentLang = '{{ lang }}';
