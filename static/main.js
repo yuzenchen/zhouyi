@@ -54,12 +54,12 @@ const i18n = {
 function _(key, params = {}) {
     const lang = window.currentLang || 'zh-TW';
     let text = i18n[lang]?.[key] || i18n['zh-TW']?.[key] || key;
-    
+
     // 支援參數替換 （例如 {n}）
     Object.keys(params).forEach(param => {
         text = text.replace(new RegExp(`\\{${param}\\}`, 'g'), params[param]);
     });
-    
+
     return text;
 }
 
@@ -108,12 +108,12 @@ function pixelDivinationAnim(picked, leftCnt, rightCnt, cb) {
             drawSticksGroup(ctx, 355, 80, rightCnt, "#ffe873", 10, 13, 13);
             ctx.font="16px VT323,monospace";
             ctx.fillStyle="#cbad63";
-            
+
             // 多語系文本
             const lang = window.currentLang || 'zh-TW';
             const leftText = lang === 'en' ? `Left (${leftCnt})` : `左堆 (${leftCnt}根)`;
             const rightText = lang === 'en' ? `Right (${rightCnt})` : `右堆 (${rightCnt}根)`;
-            
+
             ctx.fillText(leftText, 80, 168);
             ctx.fillText(rightText, lang === 'en' ? 380 : 395, 168);
             setTimeout(()=>{
@@ -131,37 +131,93 @@ const trigrams = {
     "乾":"QIAN|HEAVEN","兌":"DUI|LAKE","離":"LI|FIRE","震":"ZHEN|THUNDER",
     "巽":"XUN|WIND","坎":"KAN|WATER","艮":"GEN|MOUNTAIN","坤":"KUN|EARTH"
 };
-function drawHexagramCard(lines, guaName="卦象") {
+// 更新卦象卡片渲染函數
+function drawHexagramCard(lines, guaName = "卦象") {
     let cn = guaName || "";
-    let en = trigrams[guaName]?trigrams[guaName].split("|")[1]:"";
+    let en = trigrams[guaName] ? trigrams[guaName].split("|")[1] : "";
+
+    // 創建 3D 卡片容器
+    let container = document.createElement('div');
+    container.className = "hexagram-card-container";
+
     let card = document.createElement('div');
-    card.className = "hexagram-card";
+    card.className = "hexagram-card-3d";
+
+    let content = document.createElement('div');
+    content.className = "hexagram-card-content";
+
+    // 卦名
     let title = document.createElement('div');
-    title.className = "hexagram-chinese"; title.innerText = cn;
-    card.appendChild(title);
+    title.className = "hexagram-name-3d";
+    title.innerText = cn;
+    content.appendChild(title);
+
+    // 英文卦名
     let engName = document.createElement('div');
-    engName.className = "hexagram-english"; engName.innerText = en;
-    card.appendChild(engName);
+    engName.className = "hexagram-english-3d";
+    engName.innerText = en;
+    content.appendChild(engName);
+
+    // 卦象線條
     let linesDiv = document.createElement('div');
-    linesDiv.className = "hexagram-lines";
-    for(let i = lines.length-1; i >= 0; i--) {
+    linesDiv.className = "hexagram-lines-3d";
+
+    for (let i = lines.length - 1; i >= 0; i--) {
         let yao = lines[i];
         let ldiv;
-        if (yao==7||yao==9) {
+
+        if (yao == 7 || yao == 9) {
             ldiv = document.createElement('div');
-            ldiv.className = "hexagram-line-yang";
+            ldiv.className = "hexagram-line-yang-3d";
         } else {
             ldiv = document.createElement('div');
-            ldiv.className = "hexagram-line-yin";
+            ldiv.className = "hexagram-line-yin-3d";
             ldiv.innerHTML = "<span></span><span></span>";
         }
         linesDiv.appendChild(ldiv);
     }
-    card.appendChild(linesDiv);
+
+    content.appendChild(linesDiv);
+    card.appendChild(content);
+    container.appendChild(card);
+
+    // 添加滑鼠跟蹤效果
+    addMouseTrackingEffect(card);
+
     let box = document.getElementById('guaSymbolCard');
     box.innerHTML = "";
-    box.appendChild(card);
+    box.appendChild(container);
 }
+
+// 添加滑鼠跟蹤 3D 效果
+function addMouseTrackingEffect(card) {
+    card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        const mouseX = e.clientX - centerX;
+        const mouseY = e.clientY - centerY;
+
+        const rotateX = (mouseY / rect.height) * -10;
+        const rotateY = (mouseX / rect.width) * 10;
+
+        card.style.transform = `translateY(-10px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    });
+
+    card.addEventListener('mouseleave', () => {
+        card.style.transform = 'translateY(0px) rotateX(0deg) rotateY(0deg)';
+    });
+
+    // 點擊動畫效果
+    card.addEventListener('click', () => {
+        card.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            card.style.transform = 'scale(1) translateY(-10px)';
+        }, 150);
+    });
+}
+
 
 // ---- 爻辭解釋 ----
 const REMOTE_API = "https://yi-api.me-s01.com/api";
@@ -195,7 +251,7 @@ function fetchYaoExplanation(guaName) {
 function displayResult(data) {
     let geo = data.geo || {};
     let resultArea = document.getElementById("resultArea");
-    
+
     // 多語系顯示
     const lang = window.currentLang || 'zh-TW';
     resultArea.innerHTML =
@@ -244,7 +300,7 @@ async function runAIAnalysis() {
     aiArea.textContent = _('ai_analyzing');
     const questionInput = document.getElementById("aiQuestion");
     const question = questionInput ? questionInput.value : "";
-    
+
     // 添加語言參數到 payload
     const lang = window.currentLang || 'zh-TW';
     const payload = {
@@ -275,7 +331,7 @@ function formatAiResult(result) {
         catch { return `<div class="ai-section">${result.replace(/\n/g, "<br>")}</div>`; }
     }
     let html = "";
-    
+
     // 多語系標籤映射
     const lang = window.currentLang || 'zh-TW';
     const keysMap = lang === 'en' ? {
@@ -285,7 +341,7 @@ function formatAiResult(result) {
         "卦象": "卦象","name": "卦象","description": "卦象解析","卦象解析": "卦象解析",
         "judgment": "卦辭","卦辭": "卦辭","卦辭解析": "卦辭解析","advice": "建議"
     };
-    
+
     for (const [k, v] of Object.entries(result)) {
         if (k === "lines" && Array.isArray(v)) {
             html += `<div class="ai-section"><span class="ai-label">${_('lines_label')}：</span>`;
