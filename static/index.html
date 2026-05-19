@@ -128,6 +128,16 @@
               </div>
               <p class="judgment" x-text="result.primary?.judgment"></p>
               <p class="image-text" x-show="result.primary?.image" x-text="result.primary?.image"></p>
+
+              <!-- 爻辭清單 -->
+              <ol class="line-texts" x-show="result.primary?.lines?.length">
+                <template x-for="ln in result.primary.lines" :key="ln.position">
+                  <li class="line-text-item" :class="{ changing: isChangingPos(ln.position, result.changing_indices) }">
+                    <span class="line-text-pos" x-text="positionLabel(ln.position, result.lines)"></span>
+                    <span class="line-text-body" x-text="ln.text"></span>
+                  </li>
+                </template>
+              </ol>
             </div>
 
             <!-- Transformed (if any changing lines) -->
@@ -306,6 +316,16 @@
               </div>
               <p class="judgment" x-text="detail.primary?.judgment"></p>
               <p class="image-text" x-show="detail.primary?.image" x-text="detail.primary?.image"></p>
+
+              <!-- 爻辭清單 -->
+              <ol class="line-texts" x-show="detail.primary?.lines?.length">
+                <template x-for="ln in detail.primary.lines" :key="ln.position">
+                  <li class="line-text-item" :class="{ changing: isChangingPos(ln.position, detail.changing_indices) }">
+                    <span class="line-text-pos" x-text="positionLabel(ln.position, detail.lines)"></span>
+                    <span class="line-text-body" x-text="ln.text"></span>
+                  </li>
+                </template>
+              </ol>
             </div>
 
             <div class="hex-panel transformed" x-show="detail.transformed">

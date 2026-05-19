@@ -329,6 +329,33 @@ window.zhouyiApp = function () {
       }));
     },
 
+    // 動爻判斷:position (1-indexed),changingIndices 為 0-indexed 陣列
+    isChangingPos(position, changingIndices) {
+      return (changingIndices || []).includes(position - 1);
+    },
+
+    // 爻位名稱。rawLines 可選:
+    //   - 結果頁:[{yin, changing, ...}] 物件陣列(line_meta 產出)
+    //   - 歷史詳情:[6/7/8/9] 整數陣列
+    //   - 目錄:undefined(無擲卦結果)
+    positionLabel(position, rawLines) {
+      const zhPos = ['初', '二', '三', '四', '五', '上'];
+      const enPos = ['1st', '2nd', '3rd', '4th', '5th', '6th'];
+      if (this.lang === 'en') return enPos[position - 1] || String(position);
+
+      const raw = rawLines?.[position - 1];
+      let yang = null;
+      if (typeof raw === 'number') yang = raw === 7 || raw === 9;
+      else if (raw && typeof raw === 'object') yang = !raw.yin;
+
+      if (yang === null) return zhPos[position - 1] + '爻';
+
+      const numChar = yang ? '九' : '六';
+      if (position === 1) return `初${numChar}`;
+      if (position === 6) return `上${numChar}`;
+      return `${numChar}${zhPos[position - 1]}`;
+    },
+
     detailTransformedLines() {
       if (!this.detail?.transformed || !this.detail.lines?.length) return [];
       const changing = new Set(this.detail.changing_indices || []);

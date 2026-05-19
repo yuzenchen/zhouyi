@@ -502,6 +502,43 @@ textarea:focus {
 .modal-close:hover { color: var(--vermilion); }
 .detail-inner { padding: 0; }
 
+/* 爻辭清單(modal 內) */
+.line-texts {
+  list-style: none; padding: 0;
+  margin-top: var(--space-md);
+  border-top: 1px solid var(--ink-300);
+  padding-top: var(--space-md);
+}
+.line-text-item {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
+  gap: var(--space-sm);
+  padding: 0.6rem 0;
+  border-bottom: 1px dashed var(--ink-300);
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+.line-text-item:last-child { border-bottom: none; }
+.line-text-pos {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  color: var(--ink-700);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+.line-text-body {
+  color: var(--ink-900);
+}
+.line-text-item.changing .line-text-pos,
+.line-text-item.changing .line-text-body {
+  color: var(--vermilion);
+}
+.line-text-item.changing .line-text-pos::after {
+  content: ' ●';
+  font-size: 0.7em;
+  vertical-align: middle;
+}
+
 /* ============================================
    分享卡 (off-screen,僅截圖時用)
    ============================================ */
