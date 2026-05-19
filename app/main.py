@@ -4,7 +4,6 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.config import get_settings
@@ -49,16 +48,12 @@ async def health() -> dict:
     return {"status": "ok", "service": "zhouyi", "version": "2.0.0"}
 
 
-# 靜態前端 — 將 /static 掛載,並讓根目錄回傳 index.html
+# 靜態前端 — 掛載在 root,html=True 自動服務 index.html。
+# index.html 用相對路徑(css/main.css 而非 /static/css/main.css),這樣本地單一部署與
+# GitHub Pages 子路徑部署 (/zhouyi/) 都能正常解析。
+# /static/* 也保留 alias,讓既有書籤或外部連結不會斷。
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
 if STATIC_DIR.exists():
-    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
-
-    @app.get("/", include_in_schema=False)
-    @app.get("/{lang}", include_in_schema=False)
-    async def index(lang: str = "zh-TW"):
-        # 前端 SPA 自己處理 lang 路由,後端只負責回傳 index.html
-        if lang not in ("zh-TW", "en"):
-            # 不是支援的語言,可能是其他前端路由,還是回 index.html
-            pass
-        return FileResponse(STATIC_DIR / "index.html")
+    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static-legacy")
+    # 必須最後掛載,否則會吃掉 /api/* 路由
+    app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")

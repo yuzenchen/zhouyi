@@ -11,11 +11,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="/static/css/main.css" />
-  <link rel="icon" href="/static/assets/favicon.svg" type="image/svg+xml" />
+  <!-- API base:GitHub Pages 部署時填 Render 後端 URL;本地或單一部署留空使用相對路徑 -->
+  <meta name="api-base" content="https://zhouyi-v2.onrender.com" />
+
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 
   <!-- App logic (must register zhouyiApp before Alpine init) -->
-  <script src="/static/js/main.js"></script>
+  <script src="js/main.js"></script>
 
   <!-- html2canvas — 分享卡截圖,僅在按下載時觸發 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>

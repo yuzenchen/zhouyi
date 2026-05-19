@@ -67,6 +67,13 @@ const translations = {
   }
 };
 
+// ────────────────────────── API base ──────────────────────────
+// 本地或單一部署時使用相對路徑;GitHub Pages 等靜態 host 從 meta tag 讀後端絕對 URL
+const IS_LOCAL = ['localhost', '127.0.0.1', ''].includes(location.hostname);
+const META_API_BASE = document.querySelector('meta[name="api-base"]')?.content?.trim() || '';
+const API_BASE = IS_LOCAL ? '' : META_API_BASE;
+function apiUrl(path) { return API_BASE + path; }
+
 // ────────────────────────── Session helpers ──────────────────────────
 function getOrCreateSessionId() {
   let id = localStorage.getItem('zhouyi_session');
@@ -106,9 +113,15 @@ window.zhouyiApp = function () {
 
     // ───────── lifecycle ─────────
     init() {
-      // 從 URL 路徑取得語言:/en → en, / 或 /zh-TW → zh-TW
-      const path = window.location.pathname.replace(/\/$/, '');
-      if (path === '/en') this.lang = 'en';
+      // 語言:優先 localStorage,其次 URL 末段 /en,最後預設 zh-TW
+      // (改用 localStorage 是因為 GitHub Pages 有 /repo-name 子路徑,URL 解析會出錯)
+      const stored = localStorage.getItem('zhouyi_lang');
+      if (stored === 'zh-TW' || stored === 'en') {
+        this.lang = stored;
+      } else {
+        const pathLast = window.location.pathname.replace(/\/$/, '').split('/').pop();
+        if (pathLast === 'en') this.lang = 'en';
+      }
       document.documentElement.lang = this.lang;
 
       this.sessionId = getOrCreateSessionId();
@@ -121,9 +134,7 @@ window.zhouyiApp = function () {
     toggleLang() {
       this.lang = this.lang === 'zh-TW' ? 'en' : 'zh-TW';
       document.documentElement.lang = this.lang;
-      // 更新 URL 但不重整
-      const newPath = this.lang === 'en' ? '/en' : '/';
-      window.history.replaceState({}, '', newPath);
+      localStorage.setItem('zhouyi_lang', this.lang);
     },
 
     // ───────── divination flow ─────────
@@ -146,7 +157,7 @@ window.zhouyiApp = function () {
 
       // 動畫跑完 → 真正打 API
       try {
-        const resp = await fetch('/api/divinate', {
+        const resp = await fetch(apiUrl('/api/divinate'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -180,7 +191,7 @@ window.zhouyiApp = function () {
       if (!this.result) return;
       this.aiLoading = true;
       try {
-        const resp = await fetch('/api/ai-analysis', {
+        const resp = await fetch(apiUrl('/api/ai-analysis'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -267,19 +278,19 @@ window.zhouyiApp = function () {
 
     // ───────── history ─────────
     async loadHistory() {
-      const r = await fetch(`/api/history?session_id=${this.sessionId}&lang=${this.lang}`);
+      const r = await fetch(apiUrl(`/api/history?session_id=${this.sessionId}&lang=${this.lang}`));
       this.history = await r.json();
     },
 
     async deleteHistory(id) {
-      await fetch(`/api/history/${id}?session_id=${this.sessionId}`, { method: 'DELETE' });
+      await fetch(apiUrl(`/api/history/${id}?session_id=${this.sessionId}`), { method: 'DELETE' });
       this.history = this.history.filter(h => h.id !== id);
     },
 
     // ───────── catalog ─────────
     async loadCatalog() {
       if (this.catalog.length) return;
-      const r = await fetch(`/api/hexagrams?lang=${this.lang}`);
+      const r = await fetch(apiUrl(`/api/hexagrams?lang=${this.lang}`));
       this.catalog = await r.json();
     },
 
@@ -300,7 +311,7 @@ window.zhouyiApp = function () {
 
     async openHistoryDetail(id) {
       try {
-        const r = await fetch(`/api/history/${id}?session_id=${this.sessionId}&lang=${this.lang}`);
+        const r = await fetch(apiUrl(`/api/history/${id}?session_id=${this.sessionId}&lang=${this.lang}`));
         if (!r.ok) throw new Error('failed to load detail');
         const d = await r.json();
         d.kind = 'history';
