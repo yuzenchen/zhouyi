@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: zhouyi-api
+    runtime: python
+    plan: free            # 升級到 starter 可獲得 always-on
+    region: singapore     # 亞洲使用者延遲最低
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: MONGODB_URI
+        sync: false       # 部署後到 Render dashboard 手動填入 Railway 連線字串
+      - key: MONGODB_DB
+        value: zhouyi
+      - key: N8N_AI_WEBHOOK
+        sync: false       # 同上
+      - key: CORS_ORIGINS
+        value: "*"        # 若有獨立前端域名,改成精確 origin
+      - key: PYTHON_VERSION
+        value: 3.12.5

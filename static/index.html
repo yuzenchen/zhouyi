@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="zh-TW" x-data="zhouyiApp()" x-init="init()" :lang="lang">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title x-text="t('title')">蓍草法周易占卜</title>
+  <meta name="description" content="A modern, contemplative interface for traditional Yarrow Stalk I Ching divination." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="/static/css/main.css" />
+  <link rel="icon" href="/static/assets/favicon.svg" type="image/svg+xml" />
+
+  <!-- App logic (must register zhouyiApp before Alpine init) -->
+  <script src="/static/js/main.js"></script>
+
+  <!-- html2canvas — 分享卡截圖,僅在按下載時觸發 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <!-- Alpine.js for reactivity (15kb, no build step) -->
+  <script defer src="https://unpkg.com/alpinejs@3.14.1/dist/cdn.min.js"></script>
+</head>
+
+<body :class="{ 'is-casting': state === 'casting', 'has-result': state === 'result' }">
+
+  <!-- Top utility bar -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <span class="brand" x-text="t('brand')">周易</span>
+      <nav class="topbar-nav">
+        <button class="link" @click="view='cast'" :class="{active: view==='cast'}" x-text="t('nav_cast')">占卜</button>
+        <button class="link" @click="view='history'; loadHistory()" :class="{active: view==='history'}" x-text="t('nav_history')">歷史</button>
+        <button class="link" @click="view='catalog'; loadCatalog()" :class="{active: view==='catalog'}" x-text="t('nav_catalog')">六十四卦</button>
+      </nav>
+      <button class="lang-toggle" @click="toggleLang()" :title="t('lang_toggle')">
+        <span x-text="lang === 'zh-TW' ? 'EN' : '中'"></span>
+      </button>
+    </div>
+  </header>
+
+  <main class="page">
+
+    <!-- ───────────── 占卜畫面 ───────────── -->
+    <section class="cast-view" x-show="view === 'cast' && state !== 'result'" x-transition.opacity>
+
+      <!-- Idle / Question input -->
+      <div class="hero" x-show="state === 'idle'" x-transition>
+        <p class="eyebrow" x-text="t('eyebrow')">蓍草法 · YARROW STALK ORACLE</p>
+        <h1 class="hero-title">
+          <span x-show="lang === 'zh-TW'">靜心一念<br>而後成卦</span>
+          <span x-show="lang === 'en'" x-cloak>Still the mind,<br><em>then cast the lines.</em></span>
+        </h1>
+        <p class="hero-sub" x-text="t('hero_sub')"></p>
+
+        <div class="question-box">
+          <label class="field-label" for="q" x-text="t('question_label')">將心中所問落於紙上</label>
+          <textarea id="q" rows="3" x-model="question" :placeholder="t('question_placeholder')" maxlength="200"></textarea>
+          <div class="char-count"><span x-text="question.length"></span> / 200</div>
+        </div>
+
+        <button class="primary-btn" @click="startCasting()">
+          <span x-text="t('cta_cast')">開始占卜</span>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M5 12h14M13 5l7 7-7 7" />
+          </svg>
+        </button>
+
+        <p class="hint" x-text="t('hint')">點擊後將擲六爻,約需 6 秒</p>
+      </div>
+
+      <!-- Casting animation -->
+      <div class="casting" x-show="state === 'casting'" x-transition.opacity.duration.500ms>
+        <p class="casting-step" x-text="castingStep"></p>
+        <div class="stalks">
+          <template x-for="i in 50" :key="i">
+            <span class="stalk"
+                  :style="`--i:${i}; --delay:${i*0.02}s; --rot:${(i%2?1:-1) * (i * 0.7)}deg`"
+                  :class="{ 'set-aside': i === 1, 'in-left': i > 1 && i <= currentSplit, 'in-right': i > currentSplit }"></span>
+          </template>
+        </div>
+        <div class="cast-progress">
+          <span class="line-pip" :class="{ done: i <= currentLine }" x-text="i" x-data="{i:1}"></span>
+          <template x-for="i in 6" :key="i">
+            <span class="line-pip" :class="{ done: i <= currentLine }" x-text="i"></span>
+          </template>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ───────────── 結果畫面 ───────────── -->
+    <section class="result-view" x-show="state === 'result'" x-transition.opacity.duration.700ms>
+      <template x-if="result">
+        <article class="reading">
+          <!-- Header: Question + meta -->
+          <header class="reading-head">
+            <p class="eyebrow" x-text="t('result_eyebrow')">本卦 · PRIMARY HEXAGRAM</p>
+            <h2 class="hex-name">
+              <span class="hex-name-zh" x-text="result.primary?.name"></span>
+              <span class="hex-seq" x-text="`/ ${String(result.primary?.sequence).padStart(2, '0')}`"></span>
+            </h2>
+            <p class="reading-meta">
+              <span x-text="result.time"></span>
+              <span class="sep">·</span>
+              <span x-text="result.geo?.city || result.geo?.country || '—'"></span>
+            </p>
+            <p class="user-question" x-show="question" x-text="'「' + question + '」'"></p>
+          </header>
+
+          <!-- Hexagram visual -->
+          <div class="hex-layout">
+            <!-- Primary -->
+            <div class="hex-panel">
+              <div class="hex-symbol" :aria-label="result.primary?.name">
+                <template x-for="(line, idx) in [...result.lines].reverse()" :key="idx">
+                  <div class="line-row" :class="{ changing: line.changing, yin: line.yin, yang: !line.yin }">
+                    <span class="line-position" x-text="6 - idx"></span>
+                    <span class="line-bar">
+                      <span class="bar-seg"></span>
+                      <span class="bar-seg" x-show="line.yin"></span>
+                    </span>
+                    <span class="line-name" x-text="line.name"></span>
+                  </div>
+                </template>
+              </div>
+              <p class="judgment" x-text="result.primary?.judgment"></p>
+              <p class="image-text" x-show="result.primary?.image" x-text="result.primary?.image"></p>
+            </div>
+
+            <!-- Transformed (if any changing lines) -->
+            <div class="hex-panel transformed" x-show="result.transformed" x-transition>
+              <p class="panel-label" x-text="t('transformed')">變卦</p>
+              <h3 class="hex-name-sm">
+                <span x-text="result.transformed?.name"></span>
+                <span class="hex-seq" x-text="`/ ${String(result.transformed?.sequence).padStart(2, '0')}`"></span>
+              </h3>
+              <div class="hex-symbol small">
+                <template x-for="(line, idx) in transformedLines()" :key="idx">
+                  <div class="line-row" :class="{ yin: line.yin, yang: !line.yin }">
+                    <span class="line-bar">
+                      <span class="bar-seg"></span>
+                      <span class="bar-seg" x-show="line.yin"></span>
+                    </span>
+                  </div>
+                </template>
+              </div>
+              <p class="judgment small" x-text="result.transformed?.judgment"></p>
+            </div>
+          </div>
+
+          <!-- AI analysis -->
+          <section class="ai-section">
+            <button class="secondary-btn" x-show="!aiResult && !aiLoading" @click="askAI()">
+              <span x-text="t('ai_cta')">請 AI 解卦</span>
+            </button>
+            <div class="ai-loading" x-show="aiLoading" x-cloak>
+              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+              <span x-text="t('ai_loading')">凝思中</span>
+            </div>
+            <article class="ai-result" x-show="aiResult" x-transition>
+              <p class="ai-label" x-text="t('ai_label')">AI 解讀</p>
+              <div class="ai-text" x-html="aiResult"></div>
+            </article>
+          </section>
+
+          <!-- Actions -->
+          <footer class="reading-actions">
+            <button class="ghost-btn" @click="reset()" x-text="t('cast_again')">再卜一次</button>
+            <button class="ghost-btn" @click="downloadShareCard()" :disabled="sharing" x-text="sharing ? t('sharing') : t('share')">下載分享卡</button>
+          </footer>
+        </article>
+      </template>
+    </section>
+
+    <!-- ───────────── 歷史畫面 ───────────── -->
+    <section class="history-view" x-show="view === 'history'" x-transition.opacity>
+      <header class="page-header">
+        <p class="eyebrow" x-text="t('history_eyebrow')">HISTORY</p>
+        <h2 x-text="t('history_title')">歷次占卜</h2>
+      </header>
+      <div class="history-list" x-show="history.length > 0">
+        <template x-for="rec in history" :key="rec.id">
+          <article class="history-item" @click="openHistoryDetail(rec.id)">
+            <div class="history-meta">
+              <span class="history-time" x-text="rec.local_time"></span>
+            </div>
+            <h3 class="history-name" x-text="rec.primary?.name"></h3>
+            <p class="history-question" x-show="rec.question" x-text="rec.question"></p>
+            <div class="history-mini-hex">
+              <template x-for="(v, i) in [...rec.lines].reverse()" :key="i">
+                <span class="mini-line" :class="{ yin: v === 6 || v === 8, changing: v === 6 || v === 9 }"></span>
+              </template>
+            </div>
+            <button class="text-btn delete" @click.stop="deleteHistory(rec.id)" x-text="t('delete')">刪除</button>
+          </article>
+        </template>
+      </div>
+      <p class="empty-state" x-show="history.length === 0" x-text="t('history_empty')">尚無記錄</p>
+    </section>
+
+    <!-- ───────────── 64 卦目錄 ───────────── -->
+    <section class="catalog-view" x-show="view === 'catalog'" x-transition.opacity>
+      <header class="page-header">
+        <p class="eyebrow">CATALOG</p>
+        <h2 x-text="t('catalog_title')">六十四卦</h2>
+      </header>
+      <div class="catalog-grid">
+        <template x-for="h in catalog" :key="h.sequence">
+          <a class="catalog-card" @click.prevent="openHexagram(h)">
+            <span class="catalog-seq" x-text="String(h.sequence).padStart(2, '0')"></span>
+            <span class="catalog-name" x-text="h.name"></span>
+          </a>
+        </template>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 分享卡 render 目標(off-screen,僅在 downloadShareCard 時才有內容) -->
+  <div id="share-card-stage" aria-hidden="true">
+    <template x-if="shareCardData">
+      <div class="share-card">
+        <div class="share-card-head">
+          <span class="share-brand">周易 · ZHOUYI</span>
+          <span class="share-date" x-text="shareCardData.time"></span>
+        </div>
+        <p class="share-question" x-show="shareCardData.question" x-text="'「' + shareCardData.question + '」'"></p>
+        <div class="share-body">
+          <div class="share-hex-block">
+            <div class="share-hex">
+              <template x-for="(line, idx) in shareCardData.lines" :key="idx">
+                <div class="share-line-row" :class="{ changing: line.changing, yin: line.yin }">
+                  <span class="share-line-bar">
+                    <span class="share-bar-seg"></span>
+                    <span class="share-bar-seg right" x-show="line.yin"></span>
+                  </span>
+                </div>
+              </template>
+            </div>
+            <div class="share-hex-name">
+              <span class="share-seq" x-text="String(shareCardData.primary?.sequence).padStart(2, '0')"></span>
+              <span class="share-name" x-text="shareCardData.primary?.name"></span>
+            </div>
+            <p class="share-judgment" x-text="shareCardData.primary?.judgment"></p>
+          </div>
+          <div class="share-arrow" x-show="shareCardData.transformed">→</div>
+          <div class="share-hex-block" x-show="shareCardData.transformed">
+            <div class="share-hex">
+              <template x-for="(line, idx) in shareCardData.transformedLines" :key="idx">
+                <div class="share-line-row" :class="{ yin: line.yin }">
+                  <span class="share-line-bar">
+                    <span class="share-bar-seg"></span>
+                    <span class="share-bar-seg right" x-show="line.yin"></span>
+                  </span>
+                </div>
+              </template>
+            </div>
+            <div class="share-hex-name">
+              <span class="share-seq" x-text="String(shareCardData.transformed?.sequence).padStart(2, '0')"></span>
+              <span class="share-name" x-text="shareCardData.transformed?.name"></span>
+            </div>
+          </div>
+        </div>
+        <div class="share-card-foot">
+          <span x-text="shareCardData.geo || '—'"></span>
+          <span>蓍草法 · YARROW STALK ORACLE</span>
+        </div>
+      </div>
+    </template>
+  </div>
+
+  <!-- ───────────── 詳情 Modal(歷史 / 64卦共用) ───────────── -->
+  <div class="modal-backdrop" x-show="detail" x-cloak @click.self="closeDetail()" x-transition.opacity>
+    <div class="modal" x-show="detail" x-transition>
+      <button class="modal-close" @click="closeDetail()" aria-label="close">×</button>
+      <template x-if="detail">
+        <article class="reading detail-inner">
+          <header class="reading-head">
+            <p class="eyebrow" x-text="detail.kind === 'history' ? t('history_detail_eyebrow') : t('catalog_detail_eyebrow')"></p>
+            <h2 class="hex-name">
+              <span x-text="detail.primary?.name"></span>
+              <span class="hex-seq" x-text="`/ ${String(detail.primary?.sequence).padStart(2, '0')}`"></span>
+            </h2>
+            <p class="reading-meta" x-show="detail.local_time">
+              <span x-text="detail.local_time"></span>
+            </p>
+            <p class="user-question" x-show="detail.question" x-text="'「' + detail.question + '」'"></p>
+          </header>
+
+          <div class="hex-layout">
+            <div class="hex-panel">
+              <div class="hex-symbol">
+                <template x-for="(line, idx) in detailDisplayLines()" :key="idx">
+                  <div class="line-row" :class="{ changing: line.changing, yin: line.yin, yang: !line.yin }">
+                    <span class="line-position" x-text="6 - idx"></span>
+                    <span class="line-bar">
+                      <span class="bar-seg"></span>
+                      <span class="bar-seg" x-show="line.yin"></span>
+                    </span>
+                    <span class="line-name" x-text="line.name"></span>
+                  </div>
+                </template>
+              </div>
+              <p class="judgment" x-text="detail.primary?.judgment"></p>
+              <p class="image-text" x-show="detail.primary?.image" x-text="detail.primary?.image"></p>
+            </div>
+
+            <div class="hex-panel transformed" x-show="detail.transformed">
+              <p class="panel-label" x-text="t('transformed')">變卦</p>
+              <h3 class="hex-name-sm">
+                <span x-text="detail.transformed?.name"></span>
+                <span class="hex-seq" x-text="`/ ${String(detail.transformed?.sequence).padStart(2, '0')}`"></span>
+              </h3>
+              <div class="hex-symbol small">
+                <template x-for="(line, idx) in detailTransformedLines()" :key="idx">
+                  <div class="line-row" :class="{ yin: line.yin, yang: !line.yin }">
+                    <span class="line-bar">
+                      <span class="bar-seg"></span>
+                      <span class="bar-seg" x-show="line.yin"></span>
+                    </span>
+                  </div>
+                </template>
+              </div>
+              <p class="judgment small" x-text="detail.transformed?.judgment"></p>
+            </div>
+          </div>
+
+          <section class="ai-section" x-show="detail.ai_analysis">
+            <article class="ai-result">
+              <p class="ai-label" x-text="t('ai_label')">AI 解讀</p>
+              <div class="ai-text" x-text="detail.ai_analysis"></div>
+            </article>
+          </section>
+        </article>
+      </template>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <p x-text="t('footer_note')">本應用僅供娛樂與學習,不應作為重要決策的唯一依據。</p>
+  </footer>
+
+</body>
+</html>
