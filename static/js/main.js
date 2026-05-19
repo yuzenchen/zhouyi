@@ -17,6 +17,9 @@ const translations = {
     cta_cast: '開始占卜',
     hint: '點擊後將擲六爻,約需 6 秒',
     casting_steps: ['分而為二以象兩', '掛一以象三', '揲之以四以象四時', '歸奇於扐以象閏'],
+    waiting_title: '凝思中',
+    waiting_sub: '正向天地求問。伺服器若閒置,首次回應需數十秒喚醒,請稍候。',
+    waiting_elapsed: '已等待 {0} 秒',
     result_eyebrow: '本卦 · PRIMARY HEXAGRAM',
     transformed: '變卦',
     ai_cta: '請 AI 解卦',
@@ -48,6 +51,9 @@ const translations = {
     cta_cast: 'Cast the Lines',
     hint: 'Six lines will be cast — about six seconds',
     casting_steps: ['Divide into two', 'Set aside one', 'Count by fours', 'Gather the remainder'],
+    waiting_title: 'Contemplating',
+    waiting_sub: 'Consulting the oracle. The first response may take 30–60 seconds as the server wakes up.',
+    waiting_elapsed: '{0} seconds elapsed',
     result_eyebrow: 'PRIMARY HEXAGRAM',
     transformed: 'Transformed',
     ai_cta: 'Ask AI for interpretation',
@@ -87,7 +93,8 @@ function getOrCreateSessionId() {
 // ────────────────────────── Main app ──────────────────────────
 window.zhouyiApp = function () {
   return {
-    // state machine: idle → casting → result
+    // state machine: idle → casting → waiting → result
+    //   waiting = 動畫結束、等後端回應(尤其 Render free cold start 30-60s)
     state: 'idle',
     view: 'cast', // 'cast' | 'history' | 'catalog'
 
@@ -97,6 +104,12 @@ window.zhouyiApp = function () {
     castingStep: '',
     currentLine: 0,
     currentSplit: 25,
+
+    // 錯誤訊息(inline 顯示,取代 alert)
+    castError: null,
+    // 等待時間追蹤,顯示「再 X 秒...」提示(cold start)
+    waitElapsed: 0,
+    _waitTimer: null,
 
     result: null,
     history: [],
@@ -142,6 +155,7 @@ window.zhouyiApp = function () {
       this.state = 'casting';
       this.currentLine = 0;
       this.aiResult = null;
+      this.castError = null;
 
       // 動畫:依序模擬「分二、掛一、揲四、歸奇」並擲六爻
       const steps = this.t('casting_steps');
@@ -155,7 +169,15 @@ window.zhouyiApp = function () {
         this.currentLine = line;
       }
 
-      // 動畫跑完 → 真正打 API
+      // 動畫跑完 → 進入 waiting 等後端
+      this.state = 'waiting';
+      this.waitElapsed = 0;
+      this._waitTimer = setInterval(() => { this.waitElapsed += 1; }, 1000);
+
+      // Cold start 可達 60s,timeout 給 70s 留餘裕
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 70_000);
+
       try {
         const resp = await fetch(apiUrl('/api/divinate'), {
           method: 'POST',
@@ -166,15 +188,39 @@ window.zhouyiApp = function () {
             lang: this.lang,
             client_tz: Intl.DateTimeFormat().resolvedOptions().timeZone || null,
           }),
+          signal: controller.signal,
         });
-        if (!resp.ok) throw new Error('API failed: ' + resp.status);
+        if (!resp.ok) {
+          const detail = await resp.text().catch(() => '');
+          throw new Error(`HTTP ${resp.status}${detail ? ': ' + detail.slice(0, 120) : ''}`);
+        }
         this.result = await resp.json();
         this.state = 'result';
       } catch (err) {
         console.error(err);
+        this.castError = this.friendlyError(err);
         this.state = 'idle';
-        alert('占卜失敗:' + err.message);
+      } finally {
+        clearTimeout(timeoutId);
+        clearInterval(this._waitTimer);
+        this._waitTimer = null;
       }
+    },
+
+    friendlyError(err) {
+      const en = this.lang === 'en';
+      if (err.name === 'AbortError') {
+        return en
+          ? 'Server took too long to respond. Free-tier servers may need to wake up — please try again.'
+          : '伺服器回應逾時。Render 免費方案閒置後需喚醒,請稍候再試一次。';
+      }
+      if (err.message?.startsWith('HTTP 5')) {
+        return en ? `Server error: ${err.message}` : `伺服器忙碌:${err.message}`;
+      }
+      if (err.message?.includes('Failed to fetch') || err.message?.includes('NetworkError')) {
+        return en ? 'Network error. Check your connection.' : '網路異常,請確認連線狀態。';
+      }
+      return (en ? 'Divination failed: ' : '占卜失敗:') + (err.message || 'unknown error');
     },
 
     transformedLines() {

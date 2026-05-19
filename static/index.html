@@ -49,6 +49,12 @@
     <!-- ───────────── 占卜畫面 ───────────── -->
     <section class="cast-view" x-show="view === 'cast' && state !== 'result'" x-transition.opacity>
 
+      <!-- 錯誤訊息 (inline,僅在 idle 顯示) -->
+      <div class="cast-error" x-show="state === 'idle' && castError" x-transition>
+        <p x-text="castError"></p>
+        <button class="text-btn" @click="castError = null" x-text="lang === 'en' ? 'Dismiss' : '關閉'">關閉</button>
+      </div>
+
       <!-- Idle / Question input -->
       <div class="hero" x-show="state === 'idle'" x-transition>
         <p class="eyebrow" x-text="t('eyebrow')">蓍草法 · YARROW STALK ORACLE</p>
@@ -72,6 +78,14 @@
         </button>
 
         <p class="hint" x-text="t('hint')">點擊後將擲六爻,約需 6 秒</p>
+      </div>
+
+      <!-- Waiting state(動畫結束、等後端回應) -->
+      <div class="waiting" x-show="state === 'waiting'" x-transition.opacity.duration.500ms>
+        <p class="waiting-title" x-text="t('waiting_title')">凝思中</p>
+        <div class="waiting-dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        <p class="waiting-sub" x-text="t('waiting_sub')"></p>
+        <p class="waiting-elapsed" x-show="waitElapsed > 4" x-text="t('waiting_elapsed').replace('{0}', waitElapsed)"></p>
       </div>
 
       <!-- Casting animation -->
