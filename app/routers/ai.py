@@ -39,11 +39,23 @@ async def ai_analysis(payload: AIRequest) -> dict:
         logger.error("AI webhook call failed: %s", e)
         raise HTTPException(502, f"AI webhook error: {e}")
 
+    # Upstream 失敗(5xx/4xx)直接回報
+    if resp.status_code >= 400:
+        logger.error("AI webhook status %d: %s", resp.status_code, resp.text[:300])
+        raise HTTPException(502, f"AI webhook upstream error: HTTP {resp.status_code}")
+
+    # JSON 解析失敗時,改把純文字當 analysis 透出,避免使用者完全沒回應
     try:
         result = resp.json()
     except Exception:
-        logger.error("AI webhook non-JSON response: %s", resp.text[:200])
-        raise HTTPException(502, "AI webhook returned non-JSON")
+        text = (resp.text or "").strip()
+        logger.warning(
+            "AI webhook returned non-JSON (content-type=%s, len=%d), wrapping as text: %s",
+            resp.headers.get("content-type", "?"), len(text), text[:300],
+        )
+        if not text:
+            raise HTTPException(502, "AI webhook returned empty response")
+        result = {"analysis": text}
 
     # 若有 record_id,把分析結果寫回占卜記錄
     if payload.record_id:
