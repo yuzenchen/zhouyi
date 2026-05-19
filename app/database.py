@@ -50,9 +50,32 @@ def get_database() -> AsyncIOMotorDatabase:
     return _db
 
 
+async def ensure_hexagrams_seeded() -> None:
+    """空 collection 時自動灌入 64 卦資料。Render free plan 沒 Shell 可手動跑 script,
+    這個 hook 確保部署即可用。Idempotent — 已有資料就跳過。"""
+    db = get_database()
+    count = await db.hexagrams.count_documents({})
+    if count >= 64:
+        logger.info("Hexagrams already seeded (%d docs), skip auto-seed", count)
+        return
+
+    # 延遲 import 避開循環依賴
+    from data.hexagrams_seed import build_seed_documents
+
+    docs = build_seed_documents()
+    for doc in docs:
+        await db.hexagrams.update_one(
+            {"inner": doc["inner"], "outer": doc["outer"]},
+            {"$set": doc},
+            upsert=True,
+        )
+    logger.info("Auto-seeded %d hexagrams on startup", len(docs))
+
+
 @asynccontextmanager
 async def lifespan(app) -> AsyncIterator[None]:
-    """FastAPI lifespan:啟動時連線,關閉時釋放。"""
+    """FastAPI lifespan:啟動時連線 + 自動 seed,關閉時釋放。"""
     await connect_to_mongo()
+    await ensure_hexagrams_seeded()
     yield
     await close_mongo_connection()
