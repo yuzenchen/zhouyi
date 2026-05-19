@@ -25,4 +25,5 @@ jobs:
           pip install pytest
 
       - name: Run pytest
-        run: pytest tests/ -v
+        # 使用 python -m pytest 確保 cwd 進 sys.path,讓 `from app...` import 能解析
+        run: python -m pytest tests/ -v
