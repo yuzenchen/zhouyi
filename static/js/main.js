@@ -140,7 +140,7 @@ window.zhouyiApp = function () {
     //     paypal.me 是 P2P 付款連結,功能上一樣,只是 UI 不叫「捐款」叫「付款給某人」。
     //     可選填預設金額,如 'https://paypal.me/yuzenchen/100TWD',
     //     不填則讓對方自由輸入。
-    paypalDonateUrl: 'https://paypal.me/REPLACE_ME',
+    paypalDonateUrl: 'https://paypal.me/zhouyi79/100TWD',
 
     // 分享卡 PNG 下載
     shareCardData: null,
