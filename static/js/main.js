@@ -149,11 +149,11 @@ window.zhouyiApp = function () {
     donateMethod: 'paypal',           // 'paypal' | 'usdt-tron'
     donateCopiedAt: 0,                // timestamp;flash「已複製」用
     paypalDonateUrl: 'https://paypal.me/zhouyi79/100TWD',
-    // TODO: 換成你的 TRON wallet 地址 (T 開頭,34 字元)。
-    // 強烈建議:用一個「贊助專用」的新錢包,不要用個人主錢包 —
-    // 鏈上資料全公開,個人 wallet 一旦曝光等於公開所有交易紀錄。
-    // 推薦工具:TronLink (https://www.tronlink.org/),建新帳號用來收贊助。
-    usdtTronAddress: 'REPLACE_ME_TRON_ADDRESS',
+    // TRON wallet 地址(僅收 TRC20 USDT)
+    // ⚠ 來源:MetaMask + TRON snap(2026-05-27 設定)
+    // 待驗證:用 TronLink 匯入相同助記詞,確認地址一致且能簽署交易。
+    // 驗證前不建議公告大流量,避免有人贊助卻無法提取。
+    usdtTronAddress: 'TNuh2G619bhQgtsnGkffnEjTeTsg6CqHvV',
 
     // 分享卡 PNG 下載
     shareCardData: null,
