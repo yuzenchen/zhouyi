@@ -39,9 +39,9 @@ const translations = {
     donate_link: '贊助',
     donate_eyebrow: '贊助 · SUPPORT',
     donate_title: '支援作者',
-    donate_sub: '本應用免費、無廣告、無追蹤。若對你有幫助,歡迎以 PayPal 贊助。',
+    donate_sub: '本應用免費、無廣告、無追蹤。若對你有幫助,歡迎以 PayPal 轉帳支持。',
     donate_hint: '行動裝置請掃描 QR code,桌面請點下方按鈕',
-    donate_paypal_cta: '前往 PayPal 贊助',
+    donate_paypal_cta: '前往 PayPal.Me',
   },
   'en': {
     title: 'Yarrow Stalk I Ching',
@@ -79,9 +79,9 @@ const translations = {
     donate_link: 'Support',
     donate_eyebrow: 'SUPPORT',
     donate_title: 'Support the author',
-    donate_sub: 'This app is free, ad-free, and tracker-free. If it helped you, consider a small PayPal donation.',
+    donate_sub: 'This app is free, ad-free, and tracker-free. If it helped you, you can send a small tip via PayPal.',
     donate_hint: 'Scan the QR on mobile, or use the button below on desktop',
-    donate_paypal_cta: 'Donate via PayPal',
+    donate_paypal_cta: 'Open PayPal.Me',
   }
 };
 
@@ -134,9 +134,13 @@ window.zhouyiApp = function () {
 
     // 贊助 modal
     donateOpen: false,
-    // TODO: 把 hosted_button_id 換成你 PayPal 建好的 button id
-    // 從 https://www.paypal.com/donate/buttons 建,免費,個人帳號可
-    paypalDonateUrl: 'https://www.paypal.com/donate/?hosted_button_id=REPLACE_ME',
+    // TODO: 把 REPLACE_ME 換成你的 paypal.me 識別符(例 'yuzenchen')。
+    // 流程:登入 PayPal → 右上頭像 → PayPal.Me → 建立你的識別符 → 拿到 https://paypal.me/<id>。
+    // 註:PayPal 官方 Donate Button (/donate/buttons) 台灣不支援,
+    //     paypal.me 是 P2P 付款連結,功能上一樣,只是 UI 不叫「捐款」叫「付款給某人」。
+    //     可選填預設金額,如 'https://paypal.me/yuzenchen/100TWD',
+    //     不填則讓對方自由輸入。
+    paypalDonateUrl: 'https://paypal.me/REPLACE_ME',
 
     // 分享卡 PNG 下載
     shareCardData: null,
