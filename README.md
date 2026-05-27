@@ -170,13 +170,6 @@ python -m pytest tests/ -v
 
 ---
 
-## 待擴充(handoff 低優先項)
-
-- [ ] **AI 解卦 streaming**:目前同步等 n8n,改 SSE 讓 AI 文字逐字出來
-- [ ] **PWA 離線支援**:Service Worker cache 64 卦資料 + UI
-
----
-
 ## 硬性規則(給未來改動者)
 
 1. **64 卦對照表是 source of truth** — 任何 `app/utils/trigrams.py` 改動必須過 `test_64_hexagrams_unique` 與 `test_trigram_keys_complete`
