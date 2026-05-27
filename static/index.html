@@ -115,6 +115,9 @@
   <!-- html2canvas — 分享卡截圖,僅在按下載時觸發 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
+  <!-- QR code generator (only loaded for donate modal,輕量 < 6KB) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
   <!-- Alpine.js for reactivity (15kb, no build step) -->
   <script defer src="https://unpkg.com/alpinejs@3.14.1/dist/cdn.min.js"></script>
 </head>
@@ -469,8 +472,38 @@
   </div>
 
   <footer class="site-footer">
-    <p x-text="t('footer_note')">本應用僅供娛樂與學習,不應作為重要決策的唯一依據。</p>
+    <p>
+      <span x-text="t('footer_note')">本應用僅供娛樂與學習,不應作為重要決策的唯一依據。</span>
+      <span class="footer-sep">·</span>
+      <button class="footer-link" @click="openDonate()" x-text="t('donate_link')">贊助</button>
+    </p>
   </footer>
+
+  <!-- ───────────── 贊助 Modal ─────────────
+       一次性贊助,不接金流 webhook,只顯示 PayPal hosted button URL + QR code。
+       TODO: 把下方 PAYPAL_DONATE_URL 換成你建好的 hosted_button_id URL
+       (從 https://www.paypal.com/donate/buttons 建)
+  -->
+  <div class="modal-backdrop" x-show="donateOpen" x-cloak @click.self="closeDonate()" x-transition.opacity>
+    <div class="modal donate-modal" x-show="donateOpen" x-transition>
+      <button class="modal-close" @click="closeDonate()" aria-label="close">×</button>
+      <div class="donate-inner">
+        <p class="eyebrow" x-text="t('donate_eyebrow')">贊助 · SUPPORT</p>
+        <h2 class="donate-title" x-text="t('donate_title')">支援作者</h2>
+        <p class="donate-sub" x-text="t('donate_sub')"></p>
+
+        <!-- QR code(JS 生成,客戶端渲染,無外部 API) -->
+        <div class="donate-qr" id="donate-qr-target"></div>
+
+        <p class="donate-hint" x-text="t('donate_hint')"></p>
+
+        <a class="primary-btn donate-link"
+           :href="paypalDonateUrl"
+           target="_blank" rel="noopener noreferrer"
+           x-text="t('donate_paypal_cta')">前往 PayPal 贊助</a>
+      </div>
+    </div>
+  </div>
 
   <!-- ───────────── About / SEO 內容區 ─────────────
        目的:給搜尋引擎與 AI 爬蟲(GPTBot / PerplexityBot / Claude-Web)足夠的文字內容

@@ -556,6 +556,75 @@ textarea:focus {
 .detail-inner { padding: 0; }
 
 /* ============================================
+   贊助 Modal
+   ============================================ */
+.donate-modal {
+  max-width: 420px;
+  padding: var(--space-lg) var(--space-md) var(--space-md);
+}
+.donate-inner {
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; gap: var(--space-sm);
+}
+.donate-title {
+  font-family: var(--font-display);
+  font-size: 2rem; font-weight: 400;
+  margin-bottom: 0.25rem;
+}
+.donate-sub {
+  color: var(--ink-700);
+  font-size: 0.92rem; line-height: 1.7;
+  max-width: 320px;
+  margin-bottom: var(--space-sm);
+}
+.donate-qr {
+  background: #ffffff;
+  padding: 16px;
+  border: 1px solid var(--ink-300);
+  margin: 0 auto var(--space-sm);
+  display: inline-block;
+  line-height: 0;        /* QR img 對齊 */
+}
+.donate-qr img,
+.donate-qr canvas {
+  display: block;
+  width: 200px; height: 200px;
+}
+.donate-hint {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--ink-400);
+  letter-spacing: 0.03em;
+  margin-bottom: var(--space-sm);
+}
+.donate-link {
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+/* footer 內的贊助小連結 */
+.footer-sep {
+  color: var(--ink-400);
+  margin: 0 0.6rem;
+}
+.footer-link {
+  background: none; border: none;
+  font-family: var(--font-body);
+  font-size: inherit; color: var(--ink-700);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--ink-300);
+  transition: color 0.2s;
+  padding: 0;
+}
+.footer-link:hover {
+  color: var(--vermilion);
+  text-decoration-color: var(--vermilion);
+}
+
+/* ============================================
    About / SEO 區(footer 下方,深藏給爬蟲)
    ============================================ */
 .about-seo {

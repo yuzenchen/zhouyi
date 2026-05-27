@@ -36,6 +36,12 @@ const translations = {
     footer_note: '本應用僅供娛樂與學習,不應作為重要決策的唯一依據。',
     history_detail_eyebrow: '占卜記錄 · READING DETAIL',
     catalog_detail_eyebrow: '卦象 · HEXAGRAM',
+    donate_link: '贊助',
+    donate_eyebrow: '贊助 · SUPPORT',
+    donate_title: '支援作者',
+    donate_sub: '本應用免費、無廣告、無追蹤。若對你有幫助,歡迎以 PayPal 贊助。',
+    donate_hint: '行動裝置請掃描 QR code,桌面請點下方按鈕',
+    donate_paypal_cta: '前往 PayPal 贊助',
   },
   'en': {
     title: 'Yarrow Stalk I Ching',
@@ -70,6 +76,12 @@ const translations = {
     footer_note: 'For contemplation and study only — not a basis for important decisions.',
     history_detail_eyebrow: 'READING DETAIL',
     catalog_detail_eyebrow: 'HEXAGRAM',
+    donate_link: 'Support',
+    donate_eyebrow: 'SUPPORT',
+    donate_title: 'Support the author',
+    donate_sub: 'This app is free, ad-free, and tracker-free. If it helped you, consider a small PayPal donation.',
+    donate_hint: 'Scan the QR on mobile, or use the button below on desktop',
+    donate_paypal_cta: 'Donate via PayPal',
   }
 };
 
@@ -119,6 +131,12 @@ window.zhouyiApp = function () {
 
     // 詳情 modal:歷史與目錄共用。kind: 'history' | 'catalog'
     detail: null,
+
+    // 贊助 modal
+    donateOpen: false,
+    // TODO: 把 hosted_button_id 換成你 PayPal 建好的 button id
+    // 從 https://www.paypal.com/donate/buttons 建,免費,個人帳號可
+    paypalDonateUrl: 'https://www.paypal.com/donate/?hosted_button_id=REPLACE_ME',
 
     // 分享卡 PNG 下載
     shareCardData: null,
@@ -369,6 +387,34 @@ window.zhouyiApp = function () {
 
     closeDetail() {
       this.detail = null;
+    },
+
+    // ───────── 贊助 ─────────
+    openDonate() {
+      this.donateOpen = true;
+      // 等 DOM 渲染完再生 QR(target 元素還沒掛上前 QRCode 會 crash)
+      this.$nextTick(() => this._renderDonateQr());
+    },
+
+    closeDonate() {
+      this.donateOpen = false;
+      // 清掉舊 QR,避免重複生
+      const target = document.getElementById('donate-qr-target');
+      if (target) target.innerHTML = '';
+    },
+
+    _renderDonateQr() {
+      const target = document.getElementById('donate-qr-target');
+      if (!target || typeof QRCode === 'undefined') return;
+      target.innerHTML = '';
+      new QRCode(target, {
+        text: this.paypalDonateUrl,
+        width: 200,
+        height: 200,
+        colorDark: '#1a1612',    // --ink-900
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.M,
+      });
     },
 
     // 把 raw lines (6/7/8/9) 轉成顯示物件,給 modal 用
