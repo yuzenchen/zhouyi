@@ -3,8 +3,100 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title x-text="t('title')">蓍草法周易占卜</title>
-  <meta name="description" content="A modern, contemplative interface for traditional Yarrow Stalk I Ching divination." />
+  <title x-text="t('title')">蓍草法周易占卜 — 線上易經占卜 / Yarrow Stalk I Ching</title>
+
+  <!-- 基本 SEO -->
+  <meta name="description" content="線上蓍草法周易占卜。仿傳統「大衍之數五十,其用四十有九」之法,完整實作動爻與變卦,提供 64 卦卦辭、象辭、384 條爻辭中英對照。免費、無需註冊。" />
+  <meta name="keywords" content="周易, 易經, 占卜, 算命, 蓍草法, 卜卦, 算卦, I Ching, Yarrow Stalk, 64 卦, 動爻, 變卦, 大衍之數" />
+  <meta name="author" content="yuzenchen" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://yuzenchen.github.io/zhouyi/" />
+
+  <!-- 語系版本 -->
+  <link rel="alternate" hreflang="zh-TW" href="https://yuzenchen.github.io/zhouyi/" />
+  <link rel="alternate" hreflang="en" href="https://yuzenchen.github.io/zhouyi/?lang=en" />
+  <link rel="alternate" hreflang="x-default" href="https://yuzenchen.github.io/zhouyi/" />
+
+  <!-- Open Graph (Facebook / LINE / 一般分享) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="蓍草法周易占卜 — 線上易經占卜" />
+  <meta property="og:description" content="仿古蓍草法的線上周易占卜,完整動爻變卦邏輯,64 卦中英對照。靜心一念,而後成卦。" />
+  <meta property="og:url" content="https://yuzenchen.github.io/zhouyi/" />
+  <meta property="og:site_name" content="蓍草法周易占卜" />
+  <meta property="og:locale" content="zh_TW" />
+  <meta property="og:locale:alternate" content="en_US" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="蓍草法周易占卜" />
+  <meta name="twitter:description" content="仿古蓍草法的線上周易占卜,完整動爻變卦邏輯,64 卦中英對照。" />
+
+  <!-- Schema.org JSON-LD:WebApplication + FAQPage(AI 搜尋特別吃這套) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "name": "蓍草法周易占卜",
+        "alternateName": ["Yarrow Stalk I Ching", "周易占卜", "易經占卜", "周易算命", "易經算命"],
+        "url": "https://yuzenchen.github.io/zhouyi/",
+        "applicationCategory": "LifestyleApplication",
+        "operatingSystem": "Web",
+        "inLanguage": ["zh-TW", "en"],
+        "description": "線上蓍草法周易占卜應用。仿傳統大衍之數五十之法,完整實作動爻變卦,提供 64 卦卦辭、象辭、384 條爻辭中英對照。",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "author": { "@type": "Person", "name": "yuzenchen" },
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "什麼是蓍草法?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "蓍草法是《周易》最古老的占卜方法,出自〈繫辭傳〉「大衍之數五十,其用四十有九」。以 50 根蓍草,去其一不用,以 49 根隨機分為兩堆,經三變得一爻,六變成卦。本應用以密碼學等級的亂數產生器模擬此分堆過程。"
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "什麼是動爻?什麼是變卦?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "三變得一爻後,值為 6 (老陰) 或 9 (老陽) 的爻稱為「動爻」,代表事態正在變化。動爻陰陽翻轉後可得到「變卦」,本卦顯示當前情勢,變卦顯示走向。本應用會自動偵測動爻並計算變卦。"
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "占卜結果準嗎?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "本應用採用 OS 等級的 secrets.SystemRandom 亂數源,在「隨機性」上不打折扣。但易經的解讀本質上是一種詮釋學練習,結果僅供反思與沉思,不應作為重要決策的唯一依據。"
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "我的占卜紀錄會被其他人看到嗎?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "不會。每個瀏覽器產生匿名 session UUID 儲存在 localStorage,後端嚴格以此 ID 隔離歷史紀錄,即使知道 record ID 也無法跨 session 讀取。無需註冊、無需登入,但換瀏覽器或清掉 localStorage 就會失去歷史。"
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "如何使用本占卜應用?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "靜心想清楚要問的事,將問題輸入後點「開始占卜」。系統會以蓍草法擲六爻(約 6 秒),產出本卦與變卦,並列出卦辭、象辭、爻辭。可選擇請 AI 進一步解卦,或下載 PNG 分享卡。歷次占卜記錄保留在「歷史」分頁。"
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -379,6 +471,74 @@
   <footer class="site-footer">
     <p x-text="t('footer_note')">本應用僅供娛樂與學習,不應作為重要決策的唯一依據。</p>
   </footer>
+
+  <!-- ───────────── About / SEO 內容區 ─────────────
+       目的:給搜尋引擎與 AI 爬蟲(GPTBot / PerplexityBot / Claude-Web)足夠的文字內容
+       判斷主題。對使用者來說在頁面最底部,需主動捲動才會看到,且樣式淡化避免干擾主視覺。
+  -->
+  <aside class="about-seo" aria-label="關於本應用">
+    <div class="about-inner">
+      <section>
+        <h2>關於蓍草法周易占卜</h2>
+        <p>
+          本應用是一個線上 <strong>周易占卜</strong>(<em>易經占卜</em>)工具,完整實作傳統
+          <strong>蓍草法</strong>(<em>大衍之數五十,其用四十有九</em>),提供 64 卦的中英雙語
+          卦辭、象辭與 384 條爻辭。免費、無需註冊、不存任何個人資訊。
+        </p>
+        <p>
+          蓍草法是《周易》最古老的占卜方法,出自〈繫辭傳〉。以五十根蓍草去其一不用,以四十九根
+          隨機分為兩堆,經「分二、掛一、揲四、歸奇」四個步驟,三變得一爻,六變成卦。本應用以
+          密碼學等級的亂數源 (secrets.SystemRandom) 模擬此分堆過程,確保結果不可預測。
+        </p>
+      </section>
+
+      <section>
+        <h3>動爻、變卦、本卦</h3>
+        <p>
+          三變得一爻,結果為 6、7、8、9。其中 6 為老陰、9 為老陽,稱為「<strong>動爻</strong>」,
+          代表事態正在變化。本應用偵測所有動爻後,將其陰陽翻轉得到「<strong>變卦</strong>」:本卦
+          顯示當前情勢,變卦預示走向。原版單體應用只算本卦,本重構版完整支援動爻變卦。
+        </p>
+      </section>
+
+      <section>
+        <h3>關於 64 卦</h3>
+        <p>
+          六十四卦由八經卦(乾、兌、離、震、巽、坎、艮、坤)兩兩相重而成,依〈序卦傳〉排列:
+          乾、坤、屯、蒙、需、訟、師、比……既濟、未濟。本應用採用通行本(王弼本 / 朱熹《周易本義》)
+          的卦辭、象辭與爻辭文本,英文翻譯依 Wilhelm-Baynes 風格。
+        </p>
+      </section>
+
+      <section>
+        <h3>使用方式</h3>
+        <ol>
+          <li>靜心想清楚要問的事,將問題寫入(可空)。</li>
+          <li>點「開始占卜」,系統以蓍草法擲六爻(約 6 秒動畫)。</li>
+          <li>結果頁顯示本卦、變卦(若有動爻)、卦辭、象辭、六爻爻辭,動爻以朱砂強調。</li>
+          <li>可選擇請 AI 進一步解卦,或下載 PNG 分享卡。</li>
+          <li>歷次占卜保留在「歷史」分頁,僅本瀏覽器可見。</li>
+        </ol>
+      </section>
+
+      <section>
+        <h3>About this site (English)</h3>
+        <p>
+          A faithful online implementation of the classical <strong>Yarrow Stalk</strong>
+          divination method of the <strong>I Ching</strong> (Book of Changes). Implements
+          the traditional "50 stalks, use 49" procedure with cryptographic-grade randomness,
+          full changing-line detection, and transformed-hexagram computation. Includes the
+          complete 64 hexagrams with judgment, image and line texts in classical Chinese with
+          Wilhelm-Baynes-style English translations. Free, anonymous, no signup required.
+        </p>
+      </section>
+
+      <p class="about-disclaimer">
+        本應用僅供反思與沉思之用,不應作為重要決策的唯一依據。
+        For contemplation and study only — not a basis for important decisions.
+      </p>
+    </div>
+  </aside>
 
 </body>
 </html>

@@ -555,6 +555,52 @@ textarea:focus {
 .modal-close:hover { color: var(--vermilion); }
 .detail-inner { padding: 0; }
 
+/* ============================================
+   About / SEO 區(footer 下方,深藏給爬蟲)
+   ============================================ */
+.about-seo {
+  max-width: 720px;
+  margin: var(--space-xl) auto var(--space-lg);
+  padding: var(--space-lg) var(--space-md);
+  border-top: 1px solid var(--ink-300);
+  color: var(--ink-400);
+  font-size: 0.82rem;
+  line-height: 1.75;
+}
+.about-seo .about-inner > section + section { margin-top: var(--space-md); }
+.about-seo h2 {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--ink-700);
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.05em;
+}
+.about-seo h3 {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--ink-700);
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.05em;
+}
+.about-seo p { margin-bottom: 0.6rem; }
+.about-seo strong { color: var(--ink-700); font-weight: 500; }
+.about-seo em { font-style: italic; }
+.about-seo ol {
+  padding-left: 1.4rem;
+  margin-bottom: 0.6rem;
+}
+.about-seo ol li { margin-bottom: 0.25rem; }
+.about-disclaimer {
+  margin-top: var(--space-md);
+  padding-top: var(--space-sm);
+  border-top: 1px dashed var(--ink-300);
+  font-style: italic;
+  font-size: 0.75rem;
+  text-align: center;
+}
+
 /* 爻辭清單(modal 內) */
 .line-texts {
   list-style: none; padding: 0;

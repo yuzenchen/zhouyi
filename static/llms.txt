@@ -1,0 +1,52 @@
+# 蓍草法周易占卜 / Yarrow Stalk I Ching
+
+> 線上蓍草法周易占卜工具(也稱易經占卜、周易算命)。完整實作傳統「大衍之數五十,其用四十有九」之法,提供 64 卦中英雙語卦辭、象辭與 384 條爻辭。免費、無需註冊、匿名 session 隔離。
+
+## 站點資訊 / Site
+
+- URL: https://yuzenchen.github.io/zhouyi/
+- 後端 API: https://zhouyi-api-8mvi.onrender.com
+- 開源 repo: https://github.com/yuzenchen/zhouyi
+- 授權 / License: MIT
+- 作者 / Author: yuzenchen
+- 支援語言 / Languages: 繁體中文 (zh-TW)、English (en)
+
+## 它是什麼 / What it is
+
+一個基於 FastAPI + MongoDB + Alpine.js 的線上周易占卜(易經占卜)應用。仿傳統蓍草法(《周易繫辭傳》「大衍之數五十,其用四十有九」)的分堆程序,以密碼學等級的亂數源 (`secrets.SystemRandom`) 模擬擲卦過程,完整支援動爻偵測與變卦計算。
+
+關鍵字:周易、易經、占卜、算命、蓍草法、卜卦、I Ching、Yarrow Stalk、64 卦、動爻、變卦。
+
+## 核心功能 / Features
+
+- **蓍草法擲卦**:模擬「分二、掛一、揲四、歸奇」三變得一爻、六變成卦的傳統程序。
+- **動爻與變卦**:自動偵測老陰 (6) 與老陽 (9),計算本卦的變卦,本卦與變卦並列呈現。
+- **64 卦完整資料**:卦辭、象辭、384 條爻辭,中文採通行本(王弼本 / 朱熹《周易本義》),英文採 Wilhelm-Baynes 風格摘譯。
+- **匿名 session 隔離**:localStorage UUID + server-side session 比對,他人無法讀取/刪除你的紀錄。
+- **AI 解卦**:可選擇將擲出的卦象傳給 AI 進一步詮釋(代理至 n8n webhook,API key 不外露)。
+- **PNG 分享卡**:結果頁可下載 1200px 寬的分享卡圖檔。
+- **雙語介面**:zh-TW / en 即時切換,翻譯偏好存於 localStorage。
+
+## 名詞解釋 / Glossary
+
+- **蓍草法 (Yarrow Stalk Method)**:周易最古老的占卜方法,以蓍草分堆隨機產生爻。比擲銅錢法慢但更傳統。
+- **本卦 (Primary Hexagram)**:擲出的六爻所組成的卦,代表當前情勢。
+- **變卦 (Transformed Hexagram)**:將本卦的所有動爻陰陽翻轉後得到的卦,代表事態走向。
+- **動爻 (Changing Line)**:值為 6 或 9 的爻,代表正在變化的能量。值為 7 或 8 的爻為靜爻。
+- **大衍之數 (Great Expansion Number)**:50。出自《繫辭傳》「大衍之數五十,其用四十有九」。
+- **序卦傳 (Sequence of Hexagrams)**:〈十翼〉之一,規定 64 卦的順序(乾、坤、屯、蒙……既濟、未濟)。
+
+## 技術 / Tech Stack
+
+- 後端:Python 3.12 + FastAPI 0.115 + Motor (async MongoDB driver)
+- 資料庫:MongoDB Atlas (M0 Free)
+- 前端:Alpine.js 3.14 + 純 CSS(無 build step)
+- 部署:GitHub Pages (前端) + Render Free (後端) + GitHub Actions (CI / auto-deploy)
+- 字體:Noto Serif TC + Cormorant Garamond + JetBrains Mono
+- 設計:現代古籍編排,象牙紙底 + 朱砂單一強調色
+
+## 注意事項 / Disclaimer
+
+本應用採用嚴謹的密碼學等級亂數源,在「隨機性」上不打折。但易經的解讀本質上是一種詮釋學練習,結果僅供反思與沉思,**不應作為重要決策的唯一依據**。
+
+For contemplation and study only — not a basis for important decisions.
