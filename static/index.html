@@ -492,15 +492,52 @@
         <h2 class="donate-title" x-text="t('donate_title')">支援作者</h2>
         <p class="donate-sub" x-text="t('donate_sub')"></p>
 
-        <!-- QR code(JS 生成,客戶端渲染,無外部 API) -->
+        <!-- 方式切換 pills -->
+        <div class="donate-pills" role="tablist">
+          <button class="donate-pill"
+                  role="tab"
+                  :class="{ active: donateMethod === 'paypal' }"
+                  :aria-selected="donateMethod === 'paypal'"
+                  @click="setDonateMethod('paypal')"
+                  x-text="t('donate_method_paypal')">PayPal</button>
+          <button class="donate-pill"
+                  role="tab"
+                  :class="{ active: donateMethod === 'usdt-tron' }"
+                  :aria-selected="donateMethod === 'usdt-tron'"
+                  @click="setDonateMethod('usdt-tron')"
+                  x-text="t('donate_method_usdt')">USDT (TRON)</button>
+        </div>
+
+        <!-- QR code(JS 生成,切換 method 時重 render) -->
         <div class="donate-qr" id="donate-qr-target"></div>
 
-        <p class="donate-hint" x-text="t('donate_hint')"></p>
+        <!-- PayPal:hint + 跳轉按鈕 -->
+        <template x-if="donateMethod === 'paypal'">
+          <div class="donate-method-block">
+            <p class="donate-hint" x-text="t('donate_hint_paypal')"></p>
+            <a class="primary-btn donate-link"
+               :href="paypalDonateUrl"
+               target="_blank" rel="noopener noreferrer"
+               x-text="t('donate_paypal_cta')">前往 PayPal.Me</a>
+          </div>
+        </template>
 
-        <a class="primary-btn donate-link"
-           :href="paypalDonateUrl"
-           target="_blank" rel="noopener noreferrer"
-           x-text="t('donate_paypal_cta')">前往 PayPal 贊助</a>
+        <!-- USDT TRON:網路標籤 + 地址 + 複製鈕 -->
+        <template x-if="donateMethod === 'usdt-tron'">
+          <div class="donate-method-block">
+            <p class="donate-network" x-text="t('donate_network_usdt')"></p>
+            <button class="donate-address"
+                    @click="copyDonateAddress()"
+                    :title="t('donate_copy')">
+              <code x-text="usdtTronAddress"></code>
+              <span class="donate-copy-flash"
+                    x-show="donateCopiedAt > 0"
+                    x-transition
+                    x-text="t('donate_copied')"></span>
+            </button>
+            <p class="donate-hint" x-text="t('donate_hint_crypto')"></p>
+          </div>
+        </template>
       </div>
     </div>
   </div>

@@ -39,9 +39,15 @@ const translations = {
     donate_link: '贊助',
     donate_eyebrow: '贊助 · SUPPORT',
     donate_title: '支援作者',
-    donate_sub: '本應用免費、無廣告、無追蹤。若對你有幫助,歡迎以 PayPal 轉帳支持。',
-    donate_hint: '行動裝置請掃描 QR code,桌面請點下方按鈕',
+    donate_sub: '本應用免費、無廣告、無追蹤。若對你有幫助,歡迎以下列任一方式支持。',
+    donate_hint_paypal: '行動裝置可掃 QR code,桌面請點下方按鈕',
+    donate_hint_crypto: '掃 QR code 或點地址複製',
     donate_paypal_cta: '前往 PayPal.Me',
+    donate_method_paypal: 'PayPal',
+    donate_method_usdt: 'USDT (TRON)',
+    donate_network_usdt: '網路 / Network · TRON (TRC20)',
+    donate_copy: '複製地址',
+    donate_copied: '已複製',
   },
   'en': {
     title: 'Yarrow Stalk I Ching',
@@ -79,9 +85,15 @@ const translations = {
     donate_link: 'Support',
     donate_eyebrow: 'SUPPORT',
     donate_title: 'Support the author',
-    donate_sub: 'This app is free, ad-free, and tracker-free. If it helped you, you can send a small tip via PayPal.',
-    donate_hint: 'Scan the QR on mobile, or use the button below on desktop',
+    donate_sub: 'This app is free, ad-free, and tracker-free. If it helped you, any of the methods below is appreciated.',
+    donate_hint_paypal: 'Scan QR on mobile, or use the button below on desktop',
+    donate_hint_crypto: 'Scan QR, or click the address to copy',
     donate_paypal_cta: 'Open PayPal.Me',
+    donate_method_paypal: 'PayPal',
+    donate_method_usdt: 'USDT (TRON)',
+    donate_network_usdt: 'Network · TRON (TRC20)',
+    donate_copy: 'Copy address',
+    donate_copied: 'Copied',
   }
 };
 
@@ -134,13 +146,14 @@ window.zhouyiApp = function () {
 
     // 贊助 modal
     donateOpen: false,
-    // TODO: 把 REPLACE_ME 換成你的 paypal.me 識別符(例 'yuzenchen')。
-    // 流程:登入 PayPal → 右上頭像 → PayPal.Me → 建立你的識別符 → 拿到 https://paypal.me/<id>。
-    // 註:PayPal 官方 Donate Button (/donate/buttons) 台灣不支援,
-    //     paypal.me 是 P2P 付款連結,功能上一樣,只是 UI 不叫「捐款」叫「付款給某人」。
-    //     可選填預設金額,如 'https://paypal.me/yuzenchen/100TWD',
-    //     不填則讓對方自由輸入。
+    donateMethod: 'paypal',           // 'paypal' | 'usdt-tron'
+    donateCopiedAt: 0,                // timestamp;flash「已複製」用
     paypalDonateUrl: 'https://paypal.me/zhouyi79/100TWD',
+    // TODO: 換成你的 TRON wallet 地址 (T 開頭,34 字元)。
+    // 強烈建議:用一個「贊助專用」的新錢包,不要用個人主錢包 —
+    // 鏈上資料全公開,個人 wallet 一旦曝光等於公開所有交易紀錄。
+    // 推薦工具:TronLink (https://www.tronlink.org/),建新帳號用來收贊助。
+    usdtTronAddress: 'REPLACE_ME_TRON_ADDRESS',
 
     // 分享卡 PNG 下載
     shareCardData: null,
@@ -402,9 +415,37 @@ window.zhouyiApp = function () {
 
     closeDonate() {
       this.donateOpen = false;
+      this.donateCopiedAt = 0;
       // 清掉舊 QR,避免重複生
       const target = document.getElementById('donate-qr-target');
       if (target) target.innerHTML = '';
+    },
+
+    setDonateMethod(m) {
+      this.donateMethod = m;
+      this.donateCopiedAt = 0;
+      this.$nextTick(() => this._renderDonateQr());
+    },
+
+    donateActivePayload() {
+      // QR / 複製鈕共用的 active 內容
+      return this.donateMethod === 'paypal'
+        ? this.paypalDonateUrl
+        : this.usdtTronAddress;
+    },
+
+    async copyDonateAddress() {
+      const text = this.donateActivePayload();
+      try {
+        await navigator.clipboard.writeText(text);
+        this.donateCopiedAt = Date.now();
+        setTimeout(() => {
+          // 1.5 秒後若沒有新的複製,清掉 flash
+          if (Date.now() - this.donateCopiedAt >= 1500) this.donateCopiedAt = 0;
+        }, 1600);
+      } catch (e) {
+        console.error('copy failed', e);
+      }
     },
 
     _renderDonateQr() {
@@ -412,7 +453,7 @@ window.zhouyiApp = function () {
       if (!target || typeof QRCode === 'undefined') return;
       target.innerHTML = '';
       new QRCode(target, {
-        text: this.paypalDonateUrl,
+        text: this.donateActivePayload(),
         width: 200,
         height: 200,
         colorDark: '#1a1612',    // --ink-900

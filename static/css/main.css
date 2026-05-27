@@ -603,6 +603,75 @@ textarea:focus {
   text-align: center;
 }
 
+/* Pill 切換器(贊助方式) */
+.donate-pills {
+  display: flex; gap: 0.5rem;
+  margin-bottom: var(--space-sm);
+  flex-wrap: wrap; justify-content: center;
+}
+.donate-pill {
+  background: transparent;
+  border: 1px solid var(--ink-300);
+  color: var(--ink-700);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  padding: 0.4rem 0.95rem;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  transition: all 0.2s;
+}
+.donate-pill:hover {
+  border-color: var(--vermilion);
+  color: var(--vermilion);
+}
+.donate-pill.active {
+  background: var(--vermilion);
+  border-color: var(--vermilion);
+  color: var(--ink-100);
+}
+
+/* method 切換後的內容 block(button 或 address 區) */
+.donate-method-block {
+  display: flex; flex-direction: column; align-items: center;
+  gap: var(--space-sm); width: 100%;
+}
+.donate-network {
+  font-family: var(--font-mono); font-size: 0.7rem;
+  color: var(--ink-400); letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.donate-address {
+  background: var(--ink-200);
+  border: 1px dashed var(--ink-300);
+  padding: 0.65rem 0.85rem;
+  width: 100%; max-width: 320px;
+  cursor: pointer;
+  position: relative;
+  transition: border-color 0.2s, background 0.2s;
+}
+.donate-address code {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--ink-900);
+  word-break: break-all;
+  display: block;
+  line-height: 1.5;
+}
+.donate-address:hover {
+  border-color: var(--vermilion);
+  border-style: solid;
+}
+.donate-copy-flash {
+  position: absolute;
+  inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--vermilion);
+  color: var(--ink-100);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+}
+
 /* footer 內的贊助小連結 */
 .footer-sep {
   color: var(--ink-400);
