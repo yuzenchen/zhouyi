@@ -5,31 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title x-text="t('title')">蓍草法周易占卜 — 線上易經占卜 / Yarrow Stalk I Ching</title>
 
-  <!-- 基本 SEO -->
-  <meta name="description" content="線上蓍草法周易占卜。仿傳統「大衍之數五十,其用四十有九」之法,完整實作動爻與變卦,提供 64 卦卦辭、象辭、384 條爻辭中英對照。免費、無需註冊。" />
+  <!-- 基本 SEO(雙語:中文搜尋者 + 英文/AI 搜尋者) -->
+  <meta name="description" content="線上蓍草法周易占卜,完整實作動爻與變卦,64 卦卦辭象辭爻辭中英對照,免費無需註冊。 Free online I Ching (Yijing / Zhouyi) divination using the traditional Yarrow Stalk method — full changing-line and transformed-hexagram logic, all 64 hexagrams with English translations. No signup, anonymous, ad-free." />
   <meta name="keywords" content="周易, 易經, 占卜, 算命, 蓍草法, 卜卦, 算卦, I Ching, Yarrow Stalk, 64 卦, 動爻, 變卦, 大衍之數" />
   <meta name="author" content="yuzenchen" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://yuzenchen.github.io/zhouyi/" />
 
-  <!-- 語系版本 -->
-  <link rel="alternate" hreflang="zh-TW" href="https://yuzenchen.github.io/zhouyi/" />
-  <link rel="alternate" hreflang="en" href="https://yuzenchen.github.io/zhouyi/?lang=en" />
-  <link rel="alternate" hreflang="x-default" href="https://yuzenchen.github.io/zhouyi/" />
+  <!-- 單一 URL 提供雙語內容(client-side i18n),不使用 hreflang 分頁。
+       content-language 宣告本頁同時涵蓋中英。 -->
+  <meta http-equiv="content-language" content="zh-TW, en" />
 
   <!-- Open Graph (Facebook / LINE / 一般分享) -->
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="蓍草法周易占卜 — 線上易經占卜" />
-  <meta property="og:description" content="仿古蓍草法的線上周易占卜,完整動爻變卦邏輯,64 卦中英對照。靜心一念,而後成卦。" />
+  <meta property="og:title" content="蓍草法周易占卜 · Yarrow Stalk I Ching Divination" />
+  <meta property="og:description" content="仿古蓍草法的線上周易占卜,完整動爻變卦邏輯,64 卦中英對照。 Free online I Ching divination by the traditional Yarrow Stalk method — changing lines, transformed hexagrams, all 64 hexagrams in English." />
   <meta property="og:url" content="https://yuzenchen.github.io/zhouyi/" />
-  <meta property="og:site_name" content="蓍草法周易占卜" />
+  <meta property="og:site_name" content="蓍草法周易占卜 · Yarrow Stalk I Ching" />
   <meta property="og:locale" content="zh_TW" />
   <meta property="og:locale:alternate" content="en_US" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="蓍草法周易占卜" />
-  <meta name="twitter:description" content="仿古蓍草法的線上周易占卜,完整動爻變卦邏輯,64 卦中英對照。" />
+  <meta name="twitter:title" content="蓍草法周易占卜 · Yarrow Stalk I Ching" />
+  <meta name="twitter:description" content="Free online I Ching (Yijing) divination by the traditional Yarrow Stalk method. Changing lines, transformed hexagrams, all 64 hexagrams in English & Chinese. 線上蓍草法周易占卜,免費無需註冊。" />
 
   <!-- Schema.org JSON-LD:WebApplication + FAQPage(AI 搜尋特別吃這套) -->
   <script type="application/ld+json">
@@ -90,6 +89,46 @@
             "acceptedAnswer": {
               "@type": "Answer",
               "text": "靜心想清楚要問的事,將問題輸入後點「開始占卜」。系統會以蓍草法擲六爻(約 6 秒),產出本卦與變卦,並列出卦辭、象辭、爻辭。可選擇請 AI 進一步解卦,或下載 PNG 分享卡。歷次占卜記錄保留在「歷史」分頁。"
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What is the Yarrow Stalk method of I Ching divination?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "The Yarrow Stalk method is the oldest divination technique of the I Ching (Book of Changes), described in the Great Treatise (Xici): 'The number of the Great Expansion is fifty; of these, forty-nine are used.' Fifty yarrow stalks are taken, one set aside, and the remaining forty-nine are randomly divided into two piles. Three operations produce one line; six produce a hexagram. This app simulates the stalk-splitting process with a cryptographic-grade random number generator."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What are changing lines and the transformed hexagram?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Each line is cast as 6, 7, 8, or 9. A 6 (old yin) or 9 (old yang) is a 'changing line', signifying energy in transition. When changing lines are flipped (yin to yang or vice versa), they produce the 'transformed hexagram'. The primary hexagram shows the present situation; the transformed hexagram shows where it is heading. This app detects changing lines automatically and computes the transformed hexagram."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is the I Ching divination accurate?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "This app uses an OS-level cryptographic random source (secrets.SystemRandom), so the randomness is genuine and unpredictable. However, interpreting the I Ching is fundamentally a hermeneutic exercise. Results are for reflection and contemplation only and should not be the sole basis for important decisions."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can other people see my divination history?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. Each browser generates an anonymous session UUID stored in localStorage, and the backend strictly isolates history by that ID — even knowing a record ID, no one can read across sessions. No signup or login is required, but switching browsers or clearing localStorage will lose your history."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I use this I Ching divination app?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Calm your mind and focus on your question, type it in (optional), then tap 'Cast the Lines'. The app casts six lines by the Yarrow Stalk method (about 6 seconds) and shows the primary and transformed hexagrams along with judgment, image, and line texts. You may optionally request an AI interpretation or download a PNG share card. Past readings are kept in the History tab, visible only in your browser."
             }
           }
         ]
@@ -592,14 +631,50 @@
       </section>
 
       <section>
-        <h3>About this site (English)</h3>
+        <h3>About this I Ching divination tool (English)</h3>
         <p>
-          A faithful online implementation of the classical <strong>Yarrow Stalk</strong>
-          divination method of the <strong>I Ching</strong> (Book of Changes). Implements
-          the traditional "50 stalks, use 49" procedure with cryptographic-grade randomness,
-          full changing-line detection, and transformed-hexagram computation. Includes the
-          complete 64 hexagrams with judgment, image and line texts in classical Chinese with
-          Wilhelm-Baynes-style English translations. Free, anonymous, no signup required.
+          This is a free online <strong>I Ching</strong> (also written <em>Yijing</em> or
+          <em>Zhouyi</em>, the <em>Book of Changes</em>) divination tool that faithfully
+          implements the classical <strong>Yarrow Stalk method</strong> — the traditional
+          "the number of the Great Expansion is fifty, of these forty-nine are used"
+          procedure. It provides all 64 hexagrams with bilingual (English &amp; Chinese)
+          judgment texts, image texts, and all 384 line texts. Free, anonymous, ad-free, no
+          signup required.
+        </p>
+      </section>
+
+      <section>
+        <h3>Changing lines, transformed and primary hexagrams</h3>
+        <p>
+          Three operations produce one line, valued 6, 7, 8, or 9. A 6 (old yin) or 9 (old
+          yang) is a <strong>changing line</strong>, signifying energy in transition. Flipping
+          all changing lines yields the <strong>transformed hexagram</strong>: the primary
+          hexagram describes the present situation, the transformed hexagram its direction.
+          Randomness uses an OS-level cryptographic source, so casts are genuinely
+          unpredictable.
+        </p>
+      </section>
+
+      <section>
+        <h3>The 64 hexagrams</h3>
+        <p>
+          The sixty-four hexagrams are formed by pairing the eight trigrams (Qian, Dui, Li,
+          Zhen, Xun, Kan, Gen, Kun) and ordered by the <em>Sequence of Hexagrams</em> (Xugua):
+          Qian, Kun, Zhun, Meng, Xu, Song, Shi, Bi … Jiji, Weiji. Texts follow the received
+          version (Wang Bi / Zhu Xi's <em>Zhouyi Benyi</em>); English translations follow the
+          Wilhelm-Baynes style.
+        </p>
+      </section>
+
+      <section>
+        <h3>How to use</h3>
+        <p>
+          Calm your mind and focus on your question. Type it in (optional) and tap "Cast the
+          Lines"; the app casts six lines by the Yarrow Stalk method in about six seconds, then
+          shows the primary hexagram, the transformed hexagram (if any line is changing), and
+          the judgment, image and line texts, with changing lines highlighted in vermilion. You
+          may request an AI interpretation or download a PNG share card. Past readings stay in
+          the History tab, visible only in your own browser.
         </p>
       </section>
 
